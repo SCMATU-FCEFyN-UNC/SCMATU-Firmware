@@ -1,4 +1,4 @@
-# Firmware for Sistema de Control y Medición de Amplificador para Transductor Ultrasónico PZT
+# SCMATU-Firmware
 
 Firmware para **Sistema de Control y Medición de Amplificador para Transductor Ultrasónico PZT**.  
 Desarrollado para el microcontrolador **PIC16F18446**.  

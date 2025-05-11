@@ -1,0 +1,36 @@
+# MPLAB X auto-generated build files
+#*.X/dist/
+#*.X/build/
+*.X/nbproject/private/Makefile-*.mk
+*.X/nbproject/Makefile-*.mk
+*.X/nbproject/private/configurations.xml
+*.X/nbproject/private/*.properties
+*.X/nbproject/private/private.xml
+*.X/nbproject/private/
+*.X/.dep.inc
+
+# IDE-specific settings and cache
+*.cache/
+#.cproject
+#.project
+.vscode/
+
+# Build artifacts and intermediate files
+*.o
+*.d
+#*.elf
+#*.hex
+*.cof
+*.map
+*.sdb
+*.out
+*.log
+*.lst
+
+# Backup files
+*~
+*.bak
+
+# Temporary or local files
+.DS_Store
+Thumbs.db
