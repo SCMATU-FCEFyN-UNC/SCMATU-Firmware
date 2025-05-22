@@ -18429,7 +18429,7 @@ void CLOCK_Initialize(void);
 # 42 "mcc_generated_files/system/src/../../system/system.h" 2
 
 # 1 "mcc_generated_files/system/src/../../system/../system/pins.h" 1
-# 153 "mcc_generated_files/system/src/../../system/../system/pins.h"
+# 172 "mcc_generated_files/system/src/../../system/../system/pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -18440,6 +18440,40 @@ void PIN_MANAGER_Initialize (void);
 
 void PIN_MANAGER_IOC(void);
 # 43 "mcc_generated_files/system/src/../../system/system.h" 2
+
+# 1 "mcc_generated_files/system/src/../../system/../capture/ccp1.h" 1
+# 54 "mcc_generated_files/system/src/../../system/../capture/ccp1.h"
+typedef union CCPR1Reg_tag
+{
+   struct
+   {
+      uint8_t ccpr1l;
+      uint8_t ccpr1h;
+   };
+   struct
+   {
+      uint16_t ccpr1_16Bit;
+   };
+} CCPR1_PERIOD_REG_T ;
+# 77 "mcc_generated_files/system/src/../../system/../capture/ccp1.h"
+void CCP1_Initialize(void);
+
+
+
+
+
+
+
+void CCP1_CaptureISR(void);
+
+
+
+
+
+
+
+void CCP1_SetCallBack(void (*customCallBack)(uint16_t));
+# 44 "mcc_generated_files/system/src/../../system/system.h" 2
 
 # 1 "mcc_generated_files/system/src/../../system/../uart/eusart1.h" 1
 # 42 "mcc_generated_files/system/src/../../system/../uart/eusart1.h"
@@ -18851,7 +18885,7 @@ void EUSART1_RxCompleteCallbackRegister(void (* callbackHandler)(void));
 
 
 void EUSART1_ReceiveISR(void);
-# 44 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
+# 45 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
 
 # 1 "mcc_generated_files/system/src/../../system/../spi/mssp1.h" 1
 # 38 "mcc_generated_files/system/src/../../system/../spi/mssp1.h"
@@ -18956,8 +18990,78 @@ uint8_t SPI1_ByteRead(void);
 _Bool SPI1_IsRxReady(void);
 # 223 "mcc_generated_files/system/src/../../system/../spi/mssp1.h"
 _Bool SPI1_IsTxReady(void);
-# 45 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
-# 56 "mcc_generated_files/system/src/../../system/../uart/../system/system.h"
+# 46 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
+
+# 1 "mcc_generated_files/system/src/../../system/../timer/tmr1.h" 1
+# 38 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+# 1 "mcc_generated_files/system/src/../../system/../timer/timer_interface.h" 1
+# 50 "mcc_generated_files/system/src/../../system/../timer/timer_interface.h"
+struct TMR_INTERFACE
+{
+    void (*Initialize)(void);
+    void (*Start)(void);
+    void (*Stop)(void);
+    void (*PeriodCountSet)(size_t count);
+    void (*TimeoutCallbackRegister)(void (* CallbackHandler)(void));
+    void (*Tasks)(void);
+};
+# 38 "mcc_generated_files/system/src/../../system/../timer/tmr1.h" 2
+# 137 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+extern const struct TMR_INTERFACE Timer1;
+# 146 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_Initialize(void);
+# 155 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_Start(void);
+# 164 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_Stop(void);
+# 173 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+uint16_t TMR1_Read(void);
+# 182 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_Write(size_t timerVal);
+# 191 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_Reload(void);
+
+
+
+
+
+
+
+void TMR1_PeriodCountSet(size_t periodVal);
+# 208 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+void TMR1_StartSinglePulseAcquisition(void);
+# 217 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+uint8_t TMR1_CheckGateValueStatus(void);
+# 226 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+ void TMR1_OverflowCallbackRegister(void (* CallbackHandler)(void));
+
+
+
+
+
+
+
+void TMR1_Tasks(void);
+# 243 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+_Bool TMR1_HasOverflowOccured(void);
+
+
+
+
+
+
+
+void TMR1_GateISR(void);
+
+
+
+
+
+
+
+ void TMR1_GateCallbackRegister(void (* CallbackHandler)(void));
+# 47 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
+# 58 "mcc_generated_files/system/src/../../system/../uart/../system/system.h"
 void SYSTEM_Initialize(void);
 # 35 "mcc_generated_files/system/src/interrupt.c" 2
 
@@ -18993,6 +19097,10 @@ void __attribute__((picinterrupt(("")))) INTERRUPT_InterruptManager (void)
         else if(PIE3bits.RC1IE == 1 && PIR3bits.RC1IF == 1)
         {
             EUSART1_RxInterruptHandler();
+        }
+        else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
+        {
+            CCP1_CaptureISR();
         }
         else
         {

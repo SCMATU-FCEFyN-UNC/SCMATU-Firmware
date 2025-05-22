@@ -1,27 +1,68 @@
 Version 4.0 HI-TECH Software Intermediate Code
-[v F11566 `(v ~T0 @X0 0 tf ]
-[v F11573 `(v ~T0 @X0 0 tf ]
-"56 mcc_generated_files/system/src/../../system/clock.h
-[; ;mcc_generated_files/system/src/../../system/clock.h: 56: void CLOCK_Initialize(void);
-[v _CLOCK_Initialize `(v ~T0 @X0 0 ef ]
-"172 mcc_generated_files/system/src/../../system/pins.h
-[; ;mcc_generated_files/system/src/../../system/pins.h: 172: void PIN_MANAGER_Initialize (void);
-[v _PIN_MANAGER_Initialize `(v ~T0 @X0 0 ef ]
-"77 mcc_generated_files/system/src/../../capture/ccp1.h
-[; ;mcc_generated_files/system/src/../../capture/ccp1.h: 77: void CCP1_Initialize(void);
-[v _CCP1_Initialize `(v ~T0 @X0 0 ef ]
-"120 mcc_generated_files/system/src/../../uart/eusart1.h
-[; ;mcc_generated_files/system/src/../../uart/eusart1.h: 120: void EUSART1_Initialize(void);
-[v _EUSART1_Initialize `(v ~T0 @X0 0 ef ]
-"126 mcc_generated_files/system/src/../../spi/mssp1.h
-[; ;mcc_generated_files/system/src/../../spi/mssp1.h: 126: void SPI1_Initialize(void);
-[v _SPI1_Initialize `(v ~T0 @X0 0 ef ]
-"146 mcc_generated_files/system/src/../../timer/tmr1.h
-[; ;mcc_generated_files/system/src/../../timer/tmr1.h: 146: void TMR1_Initialize(void);
-[v _TMR1_Initialize `(v ~T0 @X0 0 ef ]
-"85 mcc_generated_files/system/src/../../system/interrupt.h
-[; ;mcc_generated_files/system/src/../../system/interrupt.h: 85: void INTERRUPT_Initialize (void);
-[v _INTERRUPT_Initialize `(v ~T0 @X0 0 ef ]
+[v F11102 `(v ~T0 @X0 0 tf1`us ]
+"12784 C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 12784: extern volatile unsigned char CCP1CON __attribute__((address(0x30E)));
+[v _CCP1CON `Vuc ~T0 @X0 0 e@782 ]
+"12902
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 12902: extern volatile unsigned char CCP1CAP __attribute__((address(0x30F)));
+[v _CCP1CAP `Vuc ~T0 @X0 0 e@783 ]
+"12764
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 12764: extern volatile unsigned char CCPR1H __attribute__((address(0x30D)));
+[v _CCPR1H `Vuc ~T0 @X0 0 e@781 ]
+"12744
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 12744: extern volatile unsigned char CCPR1L __attribute__((address(0x30C)));
+[v _CCPR1L `Vuc ~T0 @X0 0 e@780 ]
+[v F11096 `(v ~T0 @X0 0 tf1`us ]
+"93 mcc_generated_files/capture/src/../ccp1.h
+[; ;mcc_generated_files/capture/src/../ccp1.h: 93: void CCP1_SetCallBack(void (*customCallBack)(uint16_t));
+[v _CCP1_SetCallBack `(v ~T0 @X0 0 ef1`*F11096 ]
+"10984 C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 10984:     struct {
+[s S498 :2 `uc 1 :2 `uc 1 :2 `uc 1 :2 `uc 1 ]
+[n S498 . C1TSEL C2TSEL C3TSEL C4TSEL ]
+"10983
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 10983: typedef union {
+[u S497 `S498 1 ]
+[n S497 . . ]
+"10991
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 10991: extern volatile CCPTMRS0bits_t CCPTMRS0bits __attribute__((address(0x21E)));
+[v _CCPTMRS0bits `VS497 ~T0 @X0 0 e@542 ]
+"19842
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 19842:     struct {
+[s S926 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S926 . CCP1IF CCP2IF CCP3IF CCP4IF ]
+"19841
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 19841: typedef union {
+[u S925 `S926 1 ]
+[n S925 . . ]
+"19849
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 19849: extern volatile PIR6bits_t PIR6bits __attribute__((address(0x712)));
+[v _PIR6bits `VS925 ~T0 @X0 0 e@1810 ]
+"20213
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 20213:     struct {
+[s S944 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S944 . CCP1IE CCP2IE CCP3IE CCP4IE ]
+"20212
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 20212: typedef union {
+[u S943 `S944 1 ]
+[n S943 . . ]
+"20220
+[; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 20220: extern volatile PIE6bits_t PIE6bits __attribute__((address(0x71C)));
+[v _PIE6bits `VS943 ~T0 @X0 0 e@1820 ]
+"57 mcc_generated_files/capture/src/../ccp1.h
+[; ;mcc_generated_files/capture/src/../ccp1.h: 57:    {
+[s S1547 `uc 1 `uc 1 ]
+[n S1547 . ccpr1l ccpr1h ]
+"62
+[; ;mcc_generated_files/capture/src/../ccp1.h: 62:    {
+[s S1548 `us 1 ]
+[n S1548 . ccpr1_16Bit ]
+"55
+[; ;mcc_generated_files/capture/src/../ccp1.h: 55: {
+[u S1546 `S1547 1 `S1548 1 ]
+[n S1546 CCPR1Reg_tag . . ]
+[v F11112 `(v ~T0 @X0 0 tf1`us ]
+[v F11115 `(v ~T0 @X0 0 tf1`us ]
 "110 C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 110: __asm("INDF0 equ 00h");
 [; <" INDF0 equ 00h ;# ">
@@ -1402,42 +1443,94 @@ Version 4.0 HI-TECH Software Intermediate Code
 "32704
 [; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 32704: __asm("TOSH equ 01FEFh");
 [; <" TOSH equ 01FEFh ;# ">
-"339 mcc_generated_files/system/src/../../uart/eusart1.h
-[; ;mcc_generated_files/system/src/../../uart/eusart1.h: 339: void (*EUSART1_TxInterruptHandler)(void);
-[v _EUSART1_TxInterruptHandler `*F11566 ~T0 @X0 1 e ]
-"364
-[; ;mcc_generated_files/system/src/../../uart/eusart1.h: 364: void (*EUSART1_RxInterruptHandler)(void);
-[v _EUSART1_RxInterruptHandler `*F11573 ~T0 @X0 1 e ]
-"39 mcc_generated_files/system/src/system.c
-[; ;mcc_generated_files/system/src/system.c: 39: void SYSTEM_Initialize(void)
-[v _SYSTEM_Initialize `(v ~T0 @X0 1 ef ]
-"40
-[; ;mcc_generated_files/system/src/system.c: 40: {
+"40 mcc_generated_files/capture/src/ccp1.c
+[; ;mcc_generated_files/capture/src/ccp1.c: 40: static void (*CCP1_CallBack)(uint16_t);
+[v _CCP1_CallBack `*F11102 ~T0 @X0 1 s ]
+"52
+[; ;mcc_generated_files/capture/src/ccp1.c: 52: static void CCP1_DefaultCallBack(uint16_t capturedValue) {
+[v _CCP1_DefaultCallBack `(v ~T0 @X0 1 sf1`us ]
 {
-[e :U _SYSTEM_Initialize ]
+[e :U _CCP1_DefaultCallBack ]
+[v _capturedValue `us ~T0 @X0 1 r1 ]
 [f ]
-"41
-[; ;mcc_generated_files/system/src/system.c: 41:     CLOCK_Initialize();
-[e ( _CLOCK_Initialize ..  ]
-"42
-[; ;mcc_generated_files/system/src/system.c: 42:     PIN_MANAGER_Initialize();
-[e ( _PIN_MANAGER_Initialize ..  ]
-"43
-[; ;mcc_generated_files/system/src/system.c: 43:     CCP1_Initialize();
-[e ( _CCP1_Initialize ..  ]
-"44
-[; ;mcc_generated_files/system/src/system.c: 44:     EUSART1_Initialize();
-[e ( _EUSART1_Initialize ..  ]
-"45
-[; ;mcc_generated_files/system/src/system.c: 45:     SPI1_Initialize();
-[e ( _SPI1_Initialize ..  ]
-"46
-[; ;mcc_generated_files/system/src/system.c: 46:     TMR1_Initialize();
-[e ( _TMR1_Initialize ..  ]
-"47
-[; ;mcc_generated_files/system/src/system.c: 47:     INTERRUPT_Initialize();
-[e ( _INTERRUPT_Initialize ..  ]
-"48
-[; ;mcc_generated_files/system/src/system.c: 48: }
-[e :UE 1556 ]
+"54
+[; ;mcc_generated_files/capture/src/ccp1.c: 54: }
+[e :UE 1549 ]
+}
+"56
+[; ;mcc_generated_files/capture/src/ccp1.c: 56: void CCP1_Initialize(void)
+[v _CCP1_Initialize `(v ~T0 @X0 1 ef ]
+"57
+[; ;mcc_generated_files/capture/src/ccp1.c: 57: {
+{
+[e :U _CCP1_Initialize ]
+[f ]
+"61
+[; ;mcc_generated_files/capture/src/ccp1.c: 61:     CCP1CON = 0x84;
+[e = _CCP1CON -> -> 132 `i `uc ]
+"64
+[; ;mcc_generated_files/capture/src/ccp1.c: 64:     CCP1CAP = 0x0;
+[e = _CCP1CAP -> -> 0 `i `uc ]
+"67
+[; ;mcc_generated_files/capture/src/ccp1.c: 67:     CCPR1H = 0x0;
+[e = _CCPR1H -> -> 0 `i `uc ]
+"70
+[; ;mcc_generated_files/capture/src/ccp1.c: 70:     CCPR1L = 0x0;
+[e = _CCPR1L -> -> 0 `i `uc ]
+"73
+[; ;mcc_generated_files/capture/src/ccp1.c: 73:     CCP1_SetCallBack(CCP1_DefaultCallBack);
+[e ( _CCP1_SetCallBack (1 &U _CCP1_DefaultCallBack ]
+"76
+[; ;mcc_generated_files/capture/src/ccp1.c: 76:     CCPTMRS0bits.C1TSEL = 0x1;
+[e = . . _CCPTMRS0bits 0 0 -> -> 1 `i `uc ]
+"79
+[; ;mcc_generated_files/capture/src/ccp1.c: 79:     PIR6bits.CCP1IF = 0;
+[e = . . _PIR6bits 0 0 -> -> 0 `i `uc ]
+"82
+[; ;mcc_generated_files/capture/src/ccp1.c: 82:     PIE6bits.CCP1IE = 1;
+[e = . . _PIE6bits 0 0 -> -> 1 `i `uc ]
+"83
+[; ;mcc_generated_files/capture/src/ccp1.c: 83: }
+[e :UE 1550 ]
+}
+"85
+[; ;mcc_generated_files/capture/src/ccp1.c: 85: void CCP1_CaptureISR(void)
+[v _CCP1_CaptureISR `(v ~T0 @X0 1 ef ]
+"86
+[; ;mcc_generated_files/capture/src/ccp1.c: 86: {
+{
+[e :U _CCP1_CaptureISR ]
+[f ]
+"87
+[; ;mcc_generated_files/capture/src/ccp1.c: 87:     CCPR1_PERIOD_REG_T module;
+[v _module `S1546 ~T0 @X0 1 a ]
+"90
+[; ;mcc_generated_files/capture/src/ccp1.c: 90:     PIR6bits.CCP1IF = 0;
+[e = . . _PIR6bits 0 0 -> -> 0 `i `uc ]
+"93
+[; ;mcc_generated_files/capture/src/ccp1.c: 93:     module.ccpr1l = CCPR1L;
+[e = . . _module 0 0 _CCPR1L ]
+"94
+[; ;mcc_generated_files/capture/src/ccp1.c: 94:     module.ccpr1h = CCPR1H;
+[e = . . _module 0 1 _CCPR1H ]
+"97
+[; ;mcc_generated_files/capture/src/ccp1.c: 97:     CCP1_CallBack(module.ccpr1_16Bit);
+[e ( *U _CCP1_CallBack (1 . . _module 1 0 ]
+"98
+[; ;mcc_generated_files/capture/src/ccp1.c: 98: }
+[e :UE 1551 ]
+}
+"100
+[; ;mcc_generated_files/capture/src/ccp1.c: 100: void CCP1_SetCallBack(void (*customCallBack)(uint16_t)){
+[v _CCP1_SetCallBack `(v ~T0 @X0 1 ef1`*F11112 ]
+{
+[e :U _CCP1_SetCallBack ]
+[v _customCallBack `*F11115 ~T0 @X0 1 r1 ]
+[f ]
+"101
+[; ;mcc_generated_files/capture/src/ccp1.c: 101:     CCP1_CallBack = customCallBack;
+[e = _CCP1_CallBack _customCallBack ]
+"102
+[; ;mcc_generated_files/capture/src/ccp1.c: 102: }
+[e :UE 1552 ]
 }

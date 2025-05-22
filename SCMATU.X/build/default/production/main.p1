@@ -1,9 +1,9 @@
 Version 4.0 HI-TECH Software Intermediate Code
-[v F11549 `(v ~T0 @X0 0 tf ]
-[v F11556 `(v ~T0 @X0 0 tf ]
+[v F11566 `(v ~T0 @X0 0 tf ]
+[v F11573 `(v ~T0 @X0 0 tf ]
 [p mainexit ]
-"56 ./mcc_generated_files/system/../uart/../system/system.h
-[; ;./mcc_generated_files/system/../uart/../system/system.h: 56: void SYSTEM_Initialize(void);
+"58 ./mcc_generated_files/system/../uart/../system/system.h
+[; ;./mcc_generated_files/system/../uart/../system/system.h: 58: void SYSTEM_Initialize(void);
 [v _SYSTEM_Initialize `(v ~T0 @X0 0 ef ]
 "419 C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 419:     struct {
@@ -16,8 +16,15 @@ Version 4.0 HI-TECH Software Intermediate Code
 "426
 [; ;C:/Program Files/Microchip/MPLABX/v6.20/packs/Microchip/PIC16F1xxxx_DFP/1.24.387/xc8\pic\include\proc\pic16f18446.h: 426: extern volatile INTCONbits_t INTCONbits __attribute__((address(0x00B)));
 [v _INTCONbits `VS30 ~T0 @X0 0 e@11 ]
-"17 main.c
-[; ;main.c: 17: void EUSART1_SendString(const char *str);
+[v F11099 `(v ~T0 @X0 0 tf1`us ]
+"93 ./mcc_generated_files/system/../capture/ccp1.h
+[; ;./mcc_generated_files/system/../capture/ccp1.h: 93: void CCP1_SetCallBack(void (*customCallBack)(uint16_t));
+[v _CCP1_SetCallBack `(v ~T0 @X0 0 ef1`*F11099 ]
+"30 main.c
+[; ;main.c: 30: void MyCaptureHandler(uint16_t value);
+[v _MyCaptureHandler `(v ~T0 @X0 0 ef1`us ]
+"23
+[; ;main.c: 23: void EUSART1_SendString(const char *str);
 [v _EUSART1_SendString `(v ~T0 @X0 0 ef1`*Cuc ]
 "37 ./AD9833.h
 [; ;./AD9833.h: 37: void AD9833Reset(void);
@@ -28,9 +35,12 @@ Version 4.0 HI-TECH Software Intermediate Code
 "36
 [; ;./AD9833.h: 36: void AD9833SetFrequency(uint16_t reg, uint32_t freq);
 [v _AD9833SetFrequency `(v ~T0 @X0 0 ef2`us`ul ]
-"18 main.c
-[; ;main.c: 18: void UART_Receive();
+"24 main.c
+[; ;main.c: 24: void UART_Receive();
 [v _UART_Receive `(v ~T0 @X0 0 e? ]
+"121 C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdio.h
+[; ;C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdio.h: 121: int sprintf(char *restrict, const char *restrict, ...);
+[v _sprintf `(i ~T0 @X0 0 e1v`*uc`*Cuc ]
 "277 ./mcc_generated_files/system/../uart/eusart1.h
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 277: _Bool EUSART1_IsTxReady(void);
 [v _EUSART1_IsTxReady `(a ~T0 @X0 0 ef ]
@@ -43,9 +53,9 @@ Version 4.0 HI-TECH Software Intermediate Code
 "304
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 304: uint8_t EUSART1_Read(void);
 [v _EUSART1_Read `(uc ~T0 @X0 0 ef ]
-"121 C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdio.h
-[; ;C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdio.h: 121: int sprintf(char *restrict, const char *restrict, ...);
-[v _sprintf `(i ~T0 @X0 0 e1v`*uc`*Cuc ]
+"39 C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\string.h
+[; ;C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\string.h: 39: int strcmp (const char *, const char *);
+[v _strcmp `(i ~T0 @X0 0 ef2`*Cuc`*Cuc ]
 "23 C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdlib.h
 [; ;C:\Program Files\Microchip\xc8\v2.46\pic\include\c99\stdlib.h: 23: int atoi (const char *);
 [v _atoi `(i ~T0 @X0 0 ef1`*Cuc ]
@@ -1434,21 +1444,21 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; <" TOSH equ 01FEFh ;# ">
 "339 ./mcc_generated_files/system/../uart/eusart1.h
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 339: void (*EUSART1_TxInterruptHandler)(void);
-[v _EUSART1_TxInterruptHandler `*F11549 ~T0 @X0 1 e ]
+[v _EUSART1_TxInterruptHandler `*F11566 ~T0 @X0 1 e ]
 "364
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 364: void (*EUSART1_RxInterruptHandler)(void);
-[v _EUSART1_RxInterruptHandler `*F11556 ~T0 @X0 1 e ]
-"10 main.c
-[; ;main.c: 10: char receiveBuffer[64];
+[v _EUSART1_RxInterruptHandler `*F11573 ~T0 @X0 1 e ]
+"11 main.c
+[; ;main.c: 11: char receiveBuffer[64];
 [v _receiveBuffer `uc ~T0 @X0 -> 64 `i e ]
-"11
-[; ;main.c: 11: uint8_t bufferIndex = 0;
+"12
+[; ;main.c: 12: uint8_t bufferIndex = 0;
 [v _bufferIndex `uc ~T0 @X0 1 e ]
 [i _bufferIndex
 -> -> 0 `i `uc
 ]
-"12
-[; ;main.c: 12: uint8_t dataToSend = 0, receivedData = 0, receivedData2;
+"13
+[; ;main.c: 13: uint8_t dataToSend = 0, receivedData = 0, receivedData2;
 [v _dataToSend `uc ~T0 @X0 1 e ]
 [i _dataToSend
 -> -> 0 `i `uc
@@ -1458,8 +1468,8 @@ Version 4.0 HI-TECH Software Intermediate Code
 -> -> 0 `i `uc
 ]
 [v _receivedData2 `uc ~T0 @X0 1 e ]
-"13
-[; ;main.c: 13: int rxError = 0, rxReady = 0, rxIterator = 0;
+"14
+[; ;main.c: 14: int rxError = 0, rxReady = 0, rxIterator = 0;
 [v _rxError `i ~T0 @X0 1 e ]
 [i _rxError
 -> 0 `i
@@ -1472,203 +1482,446 @@ Version 4.0 HI-TECH Software Intermediate Code
 [i _rxIterator
 -> 0 `i
 ]
-"14
-[; ;main.c: 14: char buffer[32];
+"15
+[; ;main.c: 15: char buffer[32];
 [v _buffer `uc ~T0 @X0 -> 32 `i e ]
+"19
+[; ;main.c: 19: uint8_t tmr1_count = 0, seconds_count = 0;
+[v _tmr1_count `uc ~T0 @X0 1 e ]
+[i _tmr1_count
+-> -> 0 `i `uc
+]
+[v _seconds_count `uc ~T0 @X0 1 e ]
+[i _seconds_count
+-> -> 0 `i `uc
+]
 "20
-[; ;main.c: 20: uint32_t desiredFrequency = 150;
+[; ;main.c: 20: _Bool tmr1_print = 0;
+[v _tmr1_print `a ~T0 @X0 1 e ]
+[i _tmr1_print
+-> -> 0 `i `a
+]
+"26
+[; ;main.c: 26: uint32_t desiredFrequency = 150;
 [v _desiredFrequency `ul ~T0 @X0 1 e ]
 [i _desiredFrequency
 -> -> -> 150 `i `l `ul
 ]
+"29
+[; ;main.c: 29: uint16_t myCapture = 0;
+[v _myCapture `us ~T0 @X0 1 e ]
+[i _myCapture
+-> -> 0 `i `us
+]
+"31
+[; ;main.c: 31: _Bool ccp1_print = 0;
+[v _ccp1_print `a ~T0 @X0 1 e ]
+[i _ccp1_print
+-> -> 0 `i `a
+]
+"32
+[; ;main.c: 32: _Bool CCP_ENABLE = 0;
+[v _CCP_ENABLE `a ~T0 @X0 1 e ]
+[i _CCP_ENABLE
+-> -> 0 `i `a
+]
+"33
+[; ;main.c: 33: _Bool firstCaptureDone = 0;
+[v _firstCaptureDone `a ~T0 @X0 1 e ]
+[i _firstCaptureDone
+-> -> 0 `i `a
+]
+"34
+[; ;main.c: 34: uint16_t firstCapture = 0, secondCapture = 0, CCP_Difference = 0;
+[v _firstCapture `us ~T0 @X0 1 e ]
+[i _firstCapture
+-> -> 0 `i `us
+]
+[v _secondCapture `us ~T0 @X0 1 e ]
+[i _secondCapture
+-> -> 0 `i `us
+]
+[v _CCP_Difference `us ~T0 @X0 1 e ]
+[i _CCP_Difference
+-> -> 0 `i `us
+]
+"35
+[; ;main.c: 35: _Bool overflow = 0;
+[v _overflow `a ~T0 @X0 1 e ]
+[i _overflow
+-> -> 0 `i `a
+]
+"36
+[; ;main.c: 36: uint16_t capturedValues[2];
+[v _capturedValues `us ~T0 @X0 -> 2 `i e ]
+"37
+[; ;main.c: 37: uint8_t iCCP = 0;
+[v _iCCP `uc ~T0 @X0 1 e ]
+[i _iCCP
+-> -> 0 `i `uc
+]
 [v $root$_main `(v ~T0 @X0 0 e ]
-"22
-[; ;main.c: 22: int main(void)
+"39
+[; ;main.c: 39: int main(void)
 [v _main `(i ~T0 @X0 1 ef ]
-"23
-[; ;main.c: 23: {
+"40
+[; ;main.c: 40: {
 {
 [e :U _main ]
 [f ]
-"24
-[; ;main.c: 24:     SYSTEM_Initialize();
+"41
+[; ;main.c: 41:     SYSTEM_Initialize();
 [e ( _SYSTEM_Initialize ..  ]
-"31
-[; ;main.c: 31:     (INTCONbits.GIE = 1);
-[e = . . _INTCONbits 0 3 -> -> 1 `i `uc ]
-"37
-[; ;main.c: 37:     (INTCONbits.PEIE = 1);
-[e = . . _INTCONbits 0 2 -> -> 1 `i `uc ]
-"42
-[; ;main.c: 42:     EUSART1_SendString("SCMATU Hello, World!\r\n");
-[e ( _EUSART1_SendString (1 :s 1C ]
-"45
-[; ;main.c: 45:     desiredFrequency = 140000;
-[e = _desiredFrequency -> -> 140000 `l `ul ]
-"47
-[; ;main.c: 47:     AD9833Reset();
-[e ( _AD9833Reset ..  ]
 "48
-[; ;main.c: 48:     AD9833SetRegisterValue(((0 << 5) | (0 << 1) | (0 << 3)));
-[e ( _AD9833SetRegisterValue (1 -> | | << -> 0 `i -> 5 `i << -> 0 `i -> 1 `i << -> 0 `i -> 3 `i `us ]
-"49
-[; ;main.c: 49:     AD9833SetFrequency((1 << 14), desiredFrequency);
-[e ( _AD9833SetFrequency (2 , -> << -> 1 `i -> 14 `i `us _desiredFrequency ]
-"50
-[; ;main.c: 50:     AD9833SetRegisterValue((0 << 14));
-[e ( _AD9833SetRegisterValue (1 -> << -> 0 `i -> 14 `i `us ]
-"52
-[; ;main.c: 52:     while(1)
-[e :U 1555 ]
-"53
-[; ;main.c: 53:     {
-{
+[; ;main.c: 48:     (INTCONbits.GIE = 1);
+[e = . . _INTCONbits 0 3 -> -> 1 `i `uc ]
 "54
-[; ;main.c: 54:         UART_Receive();
+[; ;main.c: 54:     (INTCONbits.PEIE = 1);
+[e = . . _INTCONbits 0 2 -> -> 1 `i `uc ]
+"60
+[; ;main.c: 60:     CCP1_SetCallBack(&MyCaptureHandler);
+[e ( _CCP1_SetCallBack (1 &U _MyCaptureHandler ]
+"62
+[; ;main.c: 62:     EUSART1_SendString("SCMATU Hello, World!\r\n");
+[e ( _EUSART1_SendString (1 :s 1C ]
+"65
+[; ;main.c: 65:     desiredFrequency = 140000;
+[e = _desiredFrequency -> -> 140000 `l `ul ]
+"67
+[; ;main.c: 67:     AD9833Reset();
+[e ( _AD9833Reset ..  ]
+"68
+[; ;main.c: 68:     AD9833SetRegisterValue(((0 << 5) | (0 << 1) | (0 << 3)));
+[e ( _AD9833SetRegisterValue (1 -> | | << -> 0 `i -> 5 `i << -> 0 `i -> 1 `i << -> 0 `i -> 3 `i `us ]
+"69
+[; ;main.c: 69:     AD9833SetFrequency((1 << 14), desiredFrequency);
+[e ( _AD9833SetFrequency (2 , -> << -> 1 `i -> 14 `i `us _desiredFrequency ]
+"70
+[; ;main.c: 70:     AD9833SetRegisterValue((0 << 14));
+[e ( _AD9833SetRegisterValue (1 -> << -> 0 `i -> 14 `i `us ]
+"72
+[; ;main.c: 72:     while(1)
+[e :U 1559 ]
+"73
+[; ;main.c: 73:     {
+{
+"74
+[; ;main.c: 74:         UART_Receive();
 [e ( _UART_Receive ..  ]
-"55
-[; ;main.c: 55:     }
+"75
+[; ;main.c: 75:         if(tmr1_print)
+[e $ ! != -> _tmr1_print `i -> 0 `i 1561  ]
+"76
+[; ;main.c: 76:         {
+{
+"77
+[; ;main.c: 77:             sprintf(buffer, "TMR1 Seconds Count is: %d\r\n",seconds_count);
+[e ( _sprintf (1 , (. , &U _buffer :s 2C -> _seconds_count `i ]
+"78
+[; ;main.c: 78:             EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"79
+[; ;main.c: 79:             tmr1_print = 0;
+[e = _tmr1_print -> -> 0 `i `a ]
+"80
+[; ;main.c: 80:         }
 }
-[e :U 1554 ]
-[e $U 1555  ]
-[e :U 1556 ]
-"56
-[; ;main.c: 56: }
-[e :UE 1553 ]
+[e :U 1561 ]
+"81
+[; ;main.c: 81:         if (!CCP_ENABLE && iCCP == 0 && CCP_Difference > 0) {
+[e $ ! && && ! != -> _CCP_ENABLE `i -> 0 `i == -> _iCCP `i -> 0 `i > -> _CCP_Difference `ui -> -> 0 `i `ui 1562  ]
+{
+"82
+[; ;main.c: 82:             sprintf(buffer, "CCP First Capture: %u\r\n", capturedValues[0]);
+[e ( _sprintf (1 , (. , &U _buffer :s 3C -> *U + &U _capturedValues * -> -> -> 0 `i `ui `ux -> -> # *U &U _capturedValues `ui `ux `ui ]
+"83
+[; ;main.c: 83:             EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"84
+[; ;main.c: 84:             sprintf(buffer, "CCP Second Capture: %u\r\n", capturedValues[1]);
+[e ( _sprintf (1 , (. , &U _buffer :s 4C -> *U + &U _capturedValues * -> -> -> 1 `i `ui `ux -> -> # *U &U _capturedValues `ui `ux `ui ]
+"85
+[; ;main.c: 85:             EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"86
+[; ;main.c: 86:             sprintf(buffer, "CCP Difference: %u\r\n", CCP_Difference);
+[e ( _sprintf (1 , (. , &U _buffer :s 5C -> _CCP_Difference `ui ]
+"87
+[; ;main.c: 87:             EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"88
+[; ;main.c: 88:             CCP_Difference = 0;
+[e = _CCP_Difference -> -> 0 `i `us ]
+"89
+[; ;main.c: 89:         }
 }
-"59
-[; ;main.c: 59: void EUSART1_SendString(const char *str) {
+[e :U 1562 ]
+"90
+[; ;main.c: 90:     }
+}
+[e :U 1558 ]
+[e $U 1559  ]
+[e :U 1560 ]
+"91
+[; ;main.c: 91: }
+[e :UE 1557 ]
+}
+"94
+[; ;main.c: 94: void EUSART1_SendString(const char *str) {
 [v _EUSART1_SendString `(v ~T0 @X0 1 ef1`*Cuc ]
 {
 [e :U _EUSART1_SendString ]
 [v _str `*Cuc ~T0 @X0 1 r1 ]
 [f ]
-"60
-[; ;main.c: 60:     while(*str != '\0') {
-[e $U 1558  ]
-[e :U 1559 ]
+"95
+[; ;main.c: 95:     while(*str != '\0') {
+[e $U 1564  ]
+[e :U 1565 ]
 {
-"61
-[; ;main.c: 61:         while(!EUSART1_IsTxReady());
-[e $U 1561  ]
-[e :U 1562 ]
-[e :U 1561 ]
-[e $ ! != -> ( _EUSART1_IsTxReady ..  `i -> 0 `i 1562  ]
-[e :U 1563 ]
-"62
-[; ;main.c: 62:         EUSART1_Write(*str);
+"96
+[; ;main.c: 96:         while(!EUSART1_IsTxReady());
+[e $U 1567  ]
+[e :U 1568 ]
+[e :U 1567 ]
+[e $ ! != -> ( _EUSART1_IsTxReady ..  `i -> 0 `i 1568  ]
+[e :U 1569 ]
+"97
+[; ;main.c: 97:         EUSART1_Write(*str);
 [e ( _EUSART1_Write (1 -> *U _str `uc ]
-"63
-[; ;main.c: 63:         str++;
+"98
+[; ;main.c: 98:         str++;
 [e ++ _str * -> -> 1 `i `x -> -> # *U _str `i `x ]
-"64
-[; ;main.c: 64:     }
+"99
+[; ;main.c: 99:     }
 }
-[e :U 1558 ]
-"60
-[; ;main.c: 60:     while(*str != '\0') {
-[e $ != -> *U _str `ui -> 0 `ui 1559  ]
-[e :U 1560 ]
-"65
-[; ;main.c: 65: }
-[e :UE 1557 ]
+[e :U 1564 ]
+"95
+[; ;main.c: 95:     while(*str != '\0') {
+[e $ != -> *U _str `ui -> 0 `ui 1565  ]
+[e :U 1566 ]
+"100
+[; ;main.c: 100: }
+[e :UE 1563 ]
 }
-"67
-[; ;main.c: 67: void UART_Receive() {
+"102
+[; ;main.c: 102: void UART_Receive() {
 [v _UART_Receive `(v ~T0 @X0 1 ef ]
 {
 [e :U _UART_Receive ]
 [f ]
-"69
-[; ;main.c: 69:     if (EUSART1_IsRxReady())
-[e $ ! != -> ( _EUSART1_IsRxReady ..  `i -> 0 `i 1565  ]
-"70
-[; ;main.c: 70:     {
+"104
+[; ;main.c: 104:     if (EUSART1_IsRxReady())
+[e $ ! != -> ( _EUSART1_IsRxReady ..  `i -> 0 `i 1571  ]
+"105
+[; ;main.c: 105:     {
 {
-"71
-[; ;main.c: 71:         if(rxIterator < 64 - 1)
-[e $ ! < _rxIterator - -> 64 `i -> 1 `i 1566  ]
-"72
-[; ;main.c: 72:         {
+"106
+[; ;main.c: 106:         if(rxIterator < 64 - 1)
+[e $ ! < _rxIterator - -> 64 `i -> 1 `i 1572  ]
+"107
+[; ;main.c: 107:         {
 {
-"73
-[; ;main.c: 73:             receiveBuffer[rxIterator] = EUSART1_Read();
+"108
+[; ;main.c: 108:             receiveBuffer[rxIterator] = EUSART1_Read();
 [e = *U + &U _receiveBuffer * -> -> _rxIterator `ui `ux -> -> # *U &U _receiveBuffer `ui `ux -> ( _EUSART1_Read ..  `uc ]
-"74
-[; ;main.c: 74:             if(receiveBuffer[rxIterator] == '\n'){
-[e $ ! == -> *U + &U _receiveBuffer * -> -> _rxIterator `ui `ux -> -> # *U &U _receiveBuffer `ui `ux `ui -> 10 `ui 1567  ]
+"109
+[; ;main.c: 109:             if(receiveBuffer[rxIterator] == '\n'){
+[e $ ! == -> *U + &U _receiveBuffer * -> -> _rxIterator `ui `ux -> -> # *U &U _receiveBuffer `ui `ux `ui -> 10 `ui 1573  ]
 {
-"75
-[; ;main.c: 75:                 sprintf(buffer, "Recibido: %s\r\n",receiveBuffer);
-[e ( _sprintf (1 , (. , &U _buffer :s 2C &U _receiveBuffer ]
-"76
-[; ;main.c: 76:                 EUSART1_SendString(buffer);
+"110
+[; ;main.c: 110:                 receiveBuffer[rxIterator] = '\0';
+[e = *U + &U _receiveBuffer * -> -> _rxIterator `ui `ux -> -> # *U &U _receiveBuffer `ui `ux -> -> 0 `ui `uc ]
+"111
+[; ;main.c: 111:                 if (strcmp(receiveBuffer, "CCP_Enable") == 0)
+[e $ ! == ( _strcmp (2 , -> &U _receiveBuffer `*Cuc :s 6C -> 0 `i 1574  ]
+"112
+[; ;main.c: 112:                 {
+{
+"113
+[; ;main.c: 113:                     sprintf(buffer, "CCP enabled\r\n");
+[e ( _sprintf (1 , &U _buffer :s 7C ]
+"114
+[; ;main.c: 114:                     EUSART1_SendString(buffer);
 [e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
-"77
-[; ;main.c: 77:                 desiredFrequency = (uint32_t)atoi(receiveBuffer);
-[e = _desiredFrequency -> ( _atoi (1 -> &U _receiveBuffer `*Cuc `ul ]
-"78
-[; ;main.c: 78:                 AD9833SetFrequency((1 << 14), desiredFrequency);
-[e ( _AD9833SetFrequency (2 , -> << -> 1 `i -> 14 `i `us _desiredFrequency ]
-"79
-[; ;main.c: 79:                 sprintf(buffer, "Frec set to: %ld\r\n",desiredFrequency);
-[e ( _sprintf (1 , (. , &U _buffer :s 3C _desiredFrequency ]
-"80
-[; ;main.c: 80:                 EUSART1_SendString(buffer);
-[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
-"81
-[; ;main.c: 81:                 rxIterator = 0;
-[e = _rxIterator -> 0 `i ]
-"82
-[; ;main.c: 82:                 memset(receiveBuffer, 0, 64);
-[e ( _memset (3 , , -> &U _receiveBuffer `*v -> 0 `i -> -> 64 `i `ui ]
-"83
-[; ;main.c: 83:             }
+"115
+[; ;main.c: 115:                     CCP_ENABLE = 1;
+[e = _CCP_ENABLE -> -> 1 `i `a ]
+"117
+[; ;main.c: 117:                 }
 }
-[e $U 1568  ]
-"84
-[; ;main.c: 84:             else {rxIterator++;}
-[e :U 1567 ]
+[e $U 1575  ]
+"118
+[; ;main.c: 118:                 else
+[e :U 1574 ]
+"119
+[; ;main.c: 119:                 {
+{
+"120
+[; ;main.c: 120:                     sprintf(buffer, "Recibido: %s\r\n",receiveBuffer);
+[e ( _sprintf (1 , (. , &U _buffer :s 8C &U _receiveBuffer ]
+"121
+[; ;main.c: 121:                     EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"122
+[; ;main.c: 122:                     desiredFrequency = (uint32_t)atoi(receiveBuffer);
+[e = _desiredFrequency -> ( _atoi (1 -> &U _receiveBuffer `*Cuc `ul ]
+"123
+[; ;main.c: 123:                     AD9833SetFrequency((1 << 14), desiredFrequency);
+[e ( _AD9833SetFrequency (2 , -> << -> 1 `i -> 14 `i `us _desiredFrequency ]
+"124
+[; ;main.c: 124:                     sprintf(buffer, "Frec set to: %ld\r\n",desiredFrequency);
+[e ( _sprintf (1 , (. , &U _buffer :s 9C _desiredFrequency ]
+"125
+[; ;main.c: 125:                     EUSART1_SendString(buffer);
+[e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
+"126
+[; ;main.c: 126:                 }
+}
+[e :U 1575 ]
+"127
+[; ;main.c: 127:                 rxIterator = 0;
+[e = _rxIterator -> 0 `i ]
+"128
+[; ;main.c: 128:                 memset(receiveBuffer, 0, 64);
+[e ( _memset (3 , , -> &U _receiveBuffer `*v -> 0 `i -> -> 64 `i `ui ]
+"129
+[; ;main.c: 129:             }
+}
+[e $U 1576  ]
+"130
+[; ;main.c: 130:             else {rxIterator++;}
+[e :U 1573 ]
 {
 [e ++ _rxIterator -> 1 `i ]
 }
-[e :U 1568 ]
-"85
-[; ;main.c: 85:         }
+[e :U 1576 ]
+"131
+[; ;main.c: 131:         }
 }
-[e $U 1569  ]
-"86
-[; ;main.c: 86:         else
-[e :U 1566 ]
-"87
-[; ;main.c: 87:         {
+[e $U 1577  ]
+"132
+[; ;main.c: 132:         else
+[e :U 1572 ]
+"133
+[; ;main.c: 133:         {
 {
-"88
-[; ;main.c: 88:            sprintf(buffer, "\r\nExceeded Buffer Size\r\n");
-[e ( _sprintf (1 , &U _buffer :s 4C ]
-"89
-[; ;main.c: 89:            EUSART1_SendString(buffer);
+"134
+[; ;main.c: 134:            sprintf(buffer, "\r\nExceeded Buffer Size\r\n");
+[e ( _sprintf (1 , &U _buffer :s 10C ]
+"135
+[; ;main.c: 135:            EUSART1_SendString(buffer);
 [e ( _EUSART1_SendString (1 -> &U _buffer `*Cuc ]
-"90
-[; ;main.c: 90:            memset(receiveBuffer, 0, 64);
+"136
+[; ;main.c: 136:            memset(receiveBuffer, 0, 64);
 [e ( _memset (3 , , -> &U _receiveBuffer `*v -> 0 `i -> -> 64 `i `ui ]
-"91
-[; ;main.c: 91:            rxIterator = 0;
+"137
+[; ;main.c: 137:            rxIterator = 0;
 [e = _rxIterator -> 0 `i ]
-"92
-[; ;main.c: 92:         }
+"138
+[; ;main.c: 138:         }
 }
-[e :U 1569 ]
-"93
-[; ;main.c: 93:     }
+[e :U 1577 ]
+"139
+[; ;main.c: 139:     }
 }
-[e :U 1565 ]
-"94
-[; ;main.c: 94: }
-[e :UE 1564 ]
+[e :U 1571 ]
+"140
+[; ;main.c: 140: }
+[e :UE 1570 ]
 }
-[p f _sprintf 8650896 ]
-[a 2C 82 101 99 105 98 105 100 111 58 32 37 115 13 10 0 ]
-[a 4C 13 10 69 120 99 101 101 100 101 100 32 66 117 102 102 101 114 32 83 105 122 101 13 10 0 ]
-[a 3C 70 114 101 99 32 115 101 116 32 116 111 58 32 37 108 100 13 10 0 ]
+"143
+[; ;main.c: 143: void TMR1_Interrupt()
+[v _TMR1_Interrupt `(v ~T0 @X0 1 ef ]
+"144
+[; ;main.c: 144: {
+{
+[e :U _TMR1_Interrupt ]
+[f ]
+"145
+[; ;main.c: 145:     tmr1_count++;
+[e ++ _tmr1_count -> -> 1 `i `uc ]
+"146
+[; ;main.c: 146:     if(tmr1_count == 200)
+[e $ ! == -> _tmr1_count `i -> 200 `i 1579  ]
+"147
+[; ;main.c: 147:     {
+{
+"148
+[; ;main.c: 148:         tmr1_count = 0;
+[e = _tmr1_count -> -> 0 `i `uc ]
+"149
+[; ;main.c: 149:         seconds_count++;
+[e ++ _seconds_count -> -> 1 `i `uc ]
+"150
+[; ;main.c: 150:         if(seconds_count == 60)
+[e $ ! == -> _seconds_count `i -> 60 `i 1580  ]
+"151
+[; ;main.c: 151:         {
+{
+"152
+[; ;main.c: 152:             seconds_count = 0;
+[e = _seconds_count -> -> 0 `i `uc ]
+"153
+[; ;main.c: 153:         }
+}
+[e :U 1580 ]
+"154
+[; ;main.c: 154:         tmr1_print = 1;
+[e = _tmr1_print -> -> 1 `i `a ]
+"155
+[; ;main.c: 155:     }
+}
+[e :U 1579 ]
+"156
+[; ;main.c: 156: }
+[e :UE 1578 ]
+}
+"158
+[; ;main.c: 158: void MyCaptureHandler(uint16_t value) {
+[v _MyCaptureHandler `(v ~T0 @X0 1 ef1`us ]
+{
+[e :U _MyCaptureHandler ]
+[v _value `us ~T0 @X0 1 r1 ]
+[f ]
+"159
+[; ;main.c: 159:     if (!CCP_ENABLE) return;
+[e $ ! ! != -> _CCP_ENABLE `i -> 0 `i 1582  ]
+[e $UE 1581  ]
+[e :U 1582 ]
+"160
+[; ;main.c: 160:     capturedValues[iCCP] = value;
+[e = *U + &U _capturedValues * -> _iCCP `ux -> -> # *U &U _capturedValues `ui `ux _value ]
+"161
+[; ;main.c: 161:     if(iCCP == 1)
+[e $ ! == -> _iCCP `i -> 1 `i 1583  ]
+"162
+[; ;main.c: 162:     {
+{
+"163
+[; ;main.c: 163:        CCP_Difference = capturedValues[1] - capturedValues[0];
+[e = _CCP_Difference -> - -> *U + &U _capturedValues * -> -> -> 1 `i `ui `ux -> -> # *U &U _capturedValues `ui `ux `ui -> *U + &U _capturedValues * -> -> -> 0 `i `ui `ux -> -> # *U &U _capturedValues `ui `ux `ui `us ]
+"164
+[; ;main.c: 164:        CCP_ENABLE = 0;
+[e = _CCP_ENABLE -> -> 0 `i `a ]
+"165
+[; ;main.c: 165:     }
+}
+[e :U 1583 ]
+"166
+[; ;main.c: 166:     iCCP ^= 1;
+[e =^ _iCCP -> -> 1 `i `uc ]
+"167
+[; ;main.c: 167:  }
+[e :UE 1581 ]
+}
+[p f _sprintf 8651920 ]
+[a 6C 67 67 80 95 69 110 97 98 108 101 0 ]
+[a 3C 67 67 80 32 70 105 114 115 116 32 67 97 112 116 117 114 101 58 32 37 117 13 10 0 ]
+[a 4C 67 67 80 32 83 101 99 111 110 100 32 67 97 112 116 117 114 101 58 32 37 117 13 10 0 ]
+[a 5C 67 67 80 32 68 105 102 102 101 114 101 110 99 101 58 32 37 117 13 10 0 ]
+[a 8C 82 101 99 105 98 105 100 111 58 32 37 115 13 10 0 ]
+[a 10C 13 10 69 120 99 101 101 100 101 100 32 66 117 102 102 101 114 32 83 105 122 101 13 10 0 ]
+[a 9C 70 114 101 99 32 115 101 116 32 116 111 58 32 37 108 100 13 10 0 ]
+[a 7C 67 67 80 32 101 110 97 98 108 101 100 13 10 0 ]
+[a 2C 84 77 82 49 32 83 101 99 111 110 100 115 32 67 111 117 110 116 32 105 115 58 32 37 100 13 10 0 ]
 [a 1C 83 67 77 65 84 85 32 72 101 108 108 111 44 32 87 111 114 108 100 33 13 10 0 ]

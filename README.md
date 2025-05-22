@@ -1,14 +1,14 @@
 # SCMATU-Firmware
 
-Firmware para **Sistema de Control y Medición de Amplificador para Transductor Ultrasónico PZT**.  
-Desarrollado para el microcontrolador **PIC16F18446**.  
+Firmware for the **Control and Measurement System of a Power Amplifier for a PZT Ultrasonic Transducer**.  
+Developed for the **PIC16F18446** microcontroller.
 
-## Inicialización del repositorio
+## Repository Initialization
 
-Para obtener el repositorio en su máquina local, utilice los siguiente comandos:
+To clone this repository to your local machine, use the following commands:
 
 ```bash
-cd su_directorio_local
+cd your_local_directory
 git init
 git remote add origin https://github.com/SCMATU-FCEFyN-UNC/SCMATU-Firmware.git
 git pull origin main

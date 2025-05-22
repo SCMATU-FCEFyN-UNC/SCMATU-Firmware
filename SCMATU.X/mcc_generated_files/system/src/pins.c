@@ -56,7 +56,7 @@ void PIN_MANAGER_Initialize(void)
     */
     ANSELA = 0x7;
     ANSELB = 0x80;
-    ANSELC = 0xFF;
+    ANSELC = 0xDF;
 
     /**
     WPUx registers
@@ -93,6 +93,8 @@ void PIN_MANAGER_Initialize(void)
     RA5PPS = 0x0F;  //RA5->EUSART1:TX1;
     SSP1CLKPPS = 0xD;  //RB5->MSSP1:SCK1;
     RB5PPS = 0x13;  //RB5->MSSP1:SCK1;
+    CCP1PPS = 0x15;  //RC5->CCP1:CCP1;
+    RC5PPS = 0x09;  //RC5->CCP1:CCP1;
 
     /**
     APFCON registers

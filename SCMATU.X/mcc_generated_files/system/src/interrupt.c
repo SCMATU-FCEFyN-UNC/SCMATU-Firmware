@@ -73,6 +73,10 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         {
             EUSART1_RxInterruptHandler();
         } 
+        else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
+        {
+            CCP1_CaptureISR();
+        } 
         else
         {
             //Unhandled Interrupt

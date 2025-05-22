@@ -1,6 +1,6 @@
 Version 4.0 HI-TECH Software Intermediate Code
-[v F11555 `(v ~T0 @X0 0 tf ]
-[v F11562 `(v ~T0 @X0 0 tf ]
+[v F11572 `(v ~T0 @X0 0 tf ]
+[v F11579 `(v ~T0 @X0 0 tf ]
 "144 ./mcc_generated_files/system/../spi/mssp1.h
 [; ;./mcc_generated_files/system/../spi/mssp1.h: 144: _Bool SPI1_Open(uint8_t spiConfigIndex);
 [v _SPI1_Open `(a ~T0 @X0 0 ef1`uc ]
@@ -1403,10 +1403,10 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; <" TOSH equ 01FEFh ;# ">
 "339 ./mcc_generated_files/system/../uart/eusart1.h
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 339: void (*EUSART1_TxInterruptHandler)(void);
-[v _EUSART1_TxInterruptHandler `*F11555 ~T0 @X0 1 e ]
+[v _EUSART1_TxInterruptHandler `*F11572 ~T0 @X0 1 e ]
 "364
 [; ;./mcc_generated_files/system/../uart/eusart1.h: 364: void (*EUSART1_RxInterruptHandler)(void);
-[v _EUSART1_RxInterruptHandler `*F11562 ~T0 @X0 1 e ]
+[v _EUSART1_RxInterruptHandler `*F11579 ~T0 @X0 1 e ]
 "5 AD9833.c
 [; ;AD9833.c: 5: float FREC_MULT = 10.73741824f;
 [v _FREC_MULT `f ~T0 @X0 1 e ]
@@ -1431,17 +1431,17 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e = *U + &U _data * -> -> -> 1 `i `ui `ux -> -> # *U &U _data `ui `ux -> & -> _regValue `ui -> -> 255 `i `ui `uc ]
 "13
 [; ;AD9833.c: 13:     if(SPI1_Open(0))
-[e $ ! != -> ( _SPI1_Open (1 -> -> 0 `i `uc `i -> 0 `i 1553  ]
+[e $ ! != -> ( _SPI1_Open (1 -> -> 0 `i `uc `i -> 0 `i 1557  ]
 "14
 [; ;AD9833.c: 14:     {
 {
 "15
 [; ;AD9833.c: 15:         do { LATBbits.LATB6 = 0; } while(0);
-[e :U 1556 ]
+[e :U 1560 ]
 {
 [e = . . _LATBbits 0 3 -> -> 0 `i `uc ]
 }
-[e :U 1555 ]
+[e :U 1559 ]
 "16
 [; ;AD9833.c: 16:         SPI1_BufferWrite(&data[0], 1);
 [e ( _SPI1_BufferWrite (2 , -> &U *U + &U _data * -> -> -> 0 `i `ui `ux -> -> # *U &U _data `ui `ux `*v -> -> 1 `i `ui ]
@@ -1450,21 +1450,21 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e ( _SPI1_BufferWrite (2 , -> &U *U + &U _data * -> -> -> 1 `i `ui `ux -> -> # *U &U _data `ui `ux `*v -> -> 1 `i `ui ]
 "18
 [; ;AD9833.c: 18:         do { LATBbits.LATB6 = 1; } while(0);
-[e :U 1559 ]
+[e :U 1563 ]
 {
 [e = . . _LATBbits 0 3 -> -> 1 `i `uc ]
 }
-[e :U 1558 ]
+[e :U 1562 ]
 "19
 [; ;AD9833.c: 19:         SPI1_Close();
 [e ( _SPI1_Close ..  ]
 "20
 [; ;AD9833.c: 20:     }
 }
-[e :U 1553 ]
+[e :U 1557 ]
 "21
 [; ;AD9833.c: 21: }
-[e :UE 1552 ]
+[e :UE 1556 ]
 }
 "23
 [; ;AD9833.c: 23: void AD9833SetFrequency(uint16_t reg, uint32_t freq) {
@@ -1501,7 +1501,7 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e ( _AD9833SetRegisterValue (1 _freqHi ]
 "32
 [; ;AD9833.c: 32: }
-[e :UE 1560 ]
+[e :UE 1564 ]
 }
 "34
 [; ;AD9833.c: 34: void AD9833Reset(void)
@@ -1516,5 +1516,5 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e ( _AD9833SetRegisterValue (1 -> | << -> 0 `i -> 14 `i << -> 1 `i -> 8 `i `us ]
 "37
 [; ;AD9833.c: 37: }
-[e :UE 1561 ]
+[e :UE 1565 ]
 }
