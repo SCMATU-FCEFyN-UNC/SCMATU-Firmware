@@ -44,6 +44,7 @@
 #include "../capture/ccp1.h"
 #include "../uart/eusart1.h"
 #include "../spi/mssp1.h"
+#include "../timer/tmr0.h"
 #include "../timer/tmr1.h"
 #include "../system/interrupt.h"
 #include "../system/clock.h"

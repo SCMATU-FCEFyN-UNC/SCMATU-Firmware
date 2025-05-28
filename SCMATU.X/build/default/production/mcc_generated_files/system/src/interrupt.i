@@ -18992,8 +18992,8 @@ _Bool SPI1_IsRxReady(void);
 _Bool SPI1_IsTxReady(void);
 # 46 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
 
-# 1 "mcc_generated_files/system/src/../../system/../timer/tmr1.h" 1
-# 38 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
+# 1 "mcc_generated_files/system/src/../../system/../timer/tmr0.h" 1
+# 38 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
 # 1 "mcc_generated_files/system/src/../../system/../timer/timer_interface.h" 1
 # 50 "mcc_generated_files/system/src/../../system/../timer/timer_interface.h"
 struct TMR_INTERFACE
@@ -19005,7 +19005,40 @@ struct TMR_INTERFACE
     void (*TimeoutCallbackRegister)(void (* CallbackHandler)(void));
     void (*Tasks)(void);
 };
-# 38 "mcc_generated_files/system/src/../../system/../timer/tmr1.h" 2
+# 38 "mcc_generated_files/system/src/../../system/../timer/tmr0.h" 2
+# 101 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+extern const struct TMR_INTERFACE Timer0;
+# 110 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+void TMR0_Initialize(void);
+# 119 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+void TMR0_Start(void);
+# 128 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+void TMR0_Stop(void);
+# 137 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+uint8_t TMR0_Read(void);
+# 146 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+void TMR0_Write(uint8_t timerVal);
+# 155 "mcc_generated_files/system/src/../../system/../timer/tmr0.h"
+void TMR0_Reload(size_t periodVal);
+
+
+
+
+
+
+
+void TMR0_OverflowISR(void);
+
+
+
+
+
+
+
+ void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+# 47 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
+
+# 1 "mcc_generated_files/system/src/../../system/../timer/tmr1.h" 1
 # 137 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
 extern const struct TMR_INTERFACE Timer1;
 # 146 "mcc_generated_files/system/src/../../system/../timer/tmr1.h"
@@ -19060,8 +19093,8 @@ void TMR1_GateISR(void);
 
 
  void TMR1_GateCallbackRegister(void (* CallbackHandler)(void));
-# 47 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
-# 58 "mcc_generated_files/system/src/../../system/../uart/../system/system.h"
+# 48 "mcc_generated_files/system/src/../../system/../uart/../system/system.h" 2
+# 59 "mcc_generated_files/system/src/../../system/../uart/../system/system.h"
 void SYSTEM_Initialize(void);
 # 35 "mcc_generated_files/system/src/interrupt.c" 2
 
@@ -19097,6 +19130,10 @@ void __attribute__((picinterrupt(("")))) INTERRUPT_InterruptManager (void)
         else if(PIE3bits.RC1IE == 1 && PIR3bits.RC1IF == 1)
         {
             EUSART1_RxInterruptHandler();
+        }
+        else if(PIE0bits.TMR0IE == 1 && PIR0bits.TMR0IF == 1)
+        {
+            TMR0_OverflowISR();
         }
         else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
         {

@@ -57,8 +57,8 @@ void CCP1_Initialize(void)
 {
     // Set the CCP1 to the options selected in the User Interface
 
-    // CCPM Falling edge; EN enabled; FMT right_aligned; 
-    CCP1CON = 0x84;
+    // CCPM 4th rising edge; EN enabled; FMT right_aligned; 
+    CCP1CON = 0x86;
 
     // CTS CCP1 pin; 
     CCP1CAP = 0x0;

@@ -18976,8 +18976,8 @@ _Bool SPI1_IsRxReady(void);
 _Bool SPI1_IsTxReady(void);
 # 46 "./mcc_generated_files/system/../uart/../system/system.h" 2
 
-# 1 "./mcc_generated_files/system/../timer/tmr1.h" 1
-# 38 "./mcc_generated_files/system/../timer/tmr1.h"
+# 1 "./mcc_generated_files/system/../timer/tmr0.h" 1
+# 38 "./mcc_generated_files/system/../timer/tmr0.h"
 # 1 "./mcc_generated_files/system/../timer/timer_interface.h" 1
 # 50 "./mcc_generated_files/system/../timer/timer_interface.h"
 struct TMR_INTERFACE
@@ -18989,7 +18989,40 @@ struct TMR_INTERFACE
     void (*TimeoutCallbackRegister)(void (* CallbackHandler)(void));
     void (*Tasks)(void);
 };
-# 38 "./mcc_generated_files/system/../timer/tmr1.h" 2
+# 38 "./mcc_generated_files/system/../timer/tmr0.h" 2
+# 101 "./mcc_generated_files/system/../timer/tmr0.h"
+extern const struct TMR_INTERFACE Timer0;
+# 110 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Initialize(void);
+# 119 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Start(void);
+# 128 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Stop(void);
+# 137 "./mcc_generated_files/system/../timer/tmr0.h"
+uint8_t TMR0_Read(void);
+# 146 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Write(uint8_t timerVal);
+# 155 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Reload(size_t periodVal);
+
+
+
+
+
+
+
+void TMR0_OverflowISR(void);
+
+
+
+
+
+
+
+ void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+# 47 "./mcc_generated_files/system/../uart/../system/system.h" 2
+
+# 1 "./mcc_generated_files/system/../timer/tmr1.h" 1
 # 137 "./mcc_generated_files/system/../timer/tmr1.h"
 extern const struct TMR_INTERFACE Timer1;
 # 146 "./mcc_generated_files/system/../timer/tmr1.h"
@@ -19044,7 +19077,7 @@ void TMR1_GateISR(void);
 
 
  void TMR1_GateCallbackRegister(void (* CallbackHandler)(void));
-# 47 "./mcc_generated_files/system/../uart/../system/system.h" 2
+# 48 "./mcc_generated_files/system/../uart/../system/system.h" 2
 
 # 1 "./mcc_generated_files/system/../system/interrupt.h" 1
 # 85 "./mcc_generated_files/system/../system/interrupt.h"
@@ -19059,8 +19092,8 @@ void INT_SetInterruptHandler(void (* InterruptHandler)(void));
 extern void (*INT_InterruptHandler)(void);
 # 175 "./mcc_generated_files/system/../system/interrupt.h"
 void INT_DefaultInterruptHandler(void);
-# 48 "./mcc_generated_files/system/../uart/../system/system.h" 2
-# 58 "./mcc_generated_files/system/../uart/../system/system.h"
+# 49 "./mcc_generated_files/system/../uart/../system/system.h" 2
+# 59 "./mcc_generated_files/system/../uart/../system/system.h"
 void SYSTEM_Initialize(void);
 # 1 "main.c" 2
 
@@ -19144,24 +19177,16 @@ int rxError = 0, rxReady = 0, rxIterator = 0;
 char buffer[32];
 
 
-void TMR1_Interrupt();
-uint8_t tmr1_count = 0, seconds_count = 0;
-_Bool tmr1_print = 0;
-
-
 void EUSART1_SendString(const char *str);
 void UART_Receive();
 
 uint32_t desiredFrequency = 150;
 
 
-uint16_t myCapture = 0;
 void MyCaptureHandler(uint16_t value);
 _Bool ccp1_print = 0;
 _Bool CCP_ENABLE = 0;
-_Bool firstCaptureDone = 0;
 uint16_t firstCapture = 0, secondCapture = 0, CCP_Difference = 0;
-_Bool overflow = 0;
 uint16_t capturedValues[2];
 uint8_t iCCP = 0;
 
@@ -19185,7 +19210,6 @@ int main(void)
 
 
 
-
     CCP1_SetCallBack(&MyCaptureHandler);
 
     EUSART1_SendString("SCMATU Hello, World!\r\n");
@@ -19198,23 +19222,21 @@ int main(void)
     AD9833SetFrequency((1 << 14), desiredFrequency);
     AD9833SetRegisterValue((0 << 14));
 
+
+    PIE6bits.CCP1IE = 0;
+
+
     while(1)
     {
         UART_Receive();
-        if(tmr1_print)
-        {
-            sprintf(buffer, "TMR1 Seconds Count is: %d\r\n",seconds_count);
-            EUSART1_SendString(buffer);
-            tmr1_print = 0;
-        }
-        if (!CCP_ENABLE && iCCP == 0 && CCP_Difference > 0) {
+        if (ccp1_print && CCP_Difference > 0) {
             sprintf(buffer, "CCP First Capture: %u\r\n", capturedValues[0]);
             EUSART1_SendString(buffer);
             sprintf(buffer, "CCP Second Capture: %u\r\n", capturedValues[1]);
             EUSART1_SendString(buffer);
             sprintf(buffer, "CCP Difference: %u\r\n", CCP_Difference);
             EUSART1_SendString(buffer);
-            CCP_Difference = 0;
+            ccp1_print = 0;
         }
     }
 }
@@ -19241,8 +19263,12 @@ void UART_Receive() {
                 {
                     sprintf(buffer, "CCP enabled\r\n");
                     EUSART1_SendString(buffer);
+                    iCCP = 0;
+                    capturedValues[0] = 0;
+                    capturedValues[1] = 0;
+                    CCP_Difference = 0;
+                    PIE6bits.CCP1IE = 1;
                     CCP_ENABLE = 1;
-
                 }
                 else
                 {
@@ -19268,29 +19294,14 @@ void UART_Receive() {
     }
 }
 
-
-void TMR1_Interrupt()
-{
-    tmr1_count++;
-    if(tmr1_count == 200)
-    {
-        tmr1_count = 0;
-        seconds_count++;
-        if(seconds_count == 60)
-        {
-            seconds_count = 0;
-        }
-        tmr1_print = 1;
-    }
-}
-
 void MyCaptureHandler(uint16_t value) {
-    if (!CCP_ENABLE) return;
     capturedValues[iCCP] = value;
+
     if(iCCP == 1)
     {
-       CCP_Difference = capturedValues[1] - capturedValues[0];
-       CCP_ENABLE = 0;
+        CCP_Difference = capturedValues[1] - capturedValues[0];
+        PIE6bits.CCP1IE = 0;
+        ccp1_print = 1;
     }
     iCCP ^= 1;
  }

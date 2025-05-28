@@ -18448,7 +18448,7 @@ void CCP1_Initialize(void)
 
 
 
-    CCP1CON = 0x84;
+    CCP1CON = 0x86;
 
 
     CCP1CAP = 0x0;
