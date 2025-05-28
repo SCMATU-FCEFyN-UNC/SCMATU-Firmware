@@ -73,13 +73,13 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         {
             EUSART1_RxInterruptHandler();
         } 
-        else if(PIE0bits.TMR0IE == 1 && PIR0bits.TMR0IF == 1)
-        {
-            Timer0_OverflowISR();
-        } 
         else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
         {
             CCP1_CaptureISR();
+        } 
+        else if(PIE6bits.CCP2IE == 1 && PIR6bits.CCP2IF == 1)
+        {
+            CCP2_CaptureISR();
         } 
         else
         {

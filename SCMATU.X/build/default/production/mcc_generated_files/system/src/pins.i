@@ -18400,7 +18400,7 @@ extern __bank0 __bit __powerdown;
 extern __bank0 __bit __timeout;
 # 28 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\xc.h" 2 3
 # 38 "mcc_generated_files/system/src/../pins.h" 2
-# 172 "mcc_generated_files/system/src/../pins.h"
+# 191 "mcc_generated_files/system/src/../pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -18435,7 +18435,7 @@ void PIN_MANAGER_Initialize(void)
 
     ANSELA = 0x7;
     ANSELB = 0x80;
-    ANSELC = 0xDF;
+    ANSELC = 0xCF;
 
 
 
@@ -18472,9 +18472,11 @@ void PIN_MANAGER_Initialize(void)
     RA5PPS = 0x0F;
     SSP1CLKPPS = 0xD;
     RB5PPS = 0x13;
-    CCP1PPS = 0x15;
-    RC5PPS = 0x09;
-# 106 "mcc_generated_files/system/src/pins.c"
+    CCP2PPS = 0x15;
+    RC5PPS = 0x0A;
+    CCP1PPS = 0x14;
+    RC4PPS = 0x09;
+# 108 "mcc_generated_files/system/src/pins.c"
     IOCAP = 0x0;
     IOCAN = 0x0;
     IOCAF = 0x0;

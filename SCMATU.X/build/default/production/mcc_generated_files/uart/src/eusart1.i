@@ -18580,7 +18580,7 @@ void CLOCK_Initialize(void);
 # 42 "mcc_generated_files/uart/src/../../system/system.h" 2
 
 # 1 "mcc_generated_files/uart/src/../../system/../system/pins.h" 1
-# 172 "mcc_generated_files/uart/src/../../system/../system/pins.h"
+# 191 "mcc_generated_files/uart/src/../../system/../system/pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -18626,8 +18626,42 @@ void CCP1_CaptureISR(void);
 void CCP1_SetCallBack(void (*customCallBack)(uint16_t));
 # 44 "mcc_generated_files/uart/src/../../system/system.h" 2
 
-# 1 "mcc_generated_files/uart/src/../../system/../uart/eusart1.h" 1
+# 1 "mcc_generated_files/uart/src/../../system/../capture/ccp2.h" 1
+# 54 "mcc_generated_files/uart/src/../../system/../capture/ccp2.h"
+typedef union CCPR2Reg_tag
+{
+   struct
+   {
+      uint8_t ccpr2l;
+      uint8_t ccpr2h;
+   };
+   struct
+   {
+      uint16_t ccpr2_16Bit;
+   };
+} CCPR2_PERIOD_REG_T ;
+# 77 "mcc_generated_files/uart/src/../../system/../capture/ccp2.h"
+void CCP2_Initialize(void);
+
+
+
+
+
+
+
+void CCP2_CaptureISR(void);
+
+
+
+
+
+
+
+void CCP2_SetCallBack(void (*customCallBack)(uint16_t));
 # 45 "mcc_generated_files/uart/src/../../system/system.h" 2
+
+# 1 "mcc_generated_files/uart/src/../../system/../uart/eusart1.h" 1
+# 46 "mcc_generated_files/uart/src/../../system/system.h" 2
 
 # 1 "mcc_generated_files/uart/src/../../system/../spi/mssp1.h" 1
 # 38 "mcc_generated_files/uart/src/../../system/../spi/mssp1.h"
@@ -18732,10 +18766,10 @@ uint8_t SPI1_ByteRead(void);
 _Bool SPI1_IsRxReady(void);
 # 223 "mcc_generated_files/uart/src/../../system/../spi/mssp1.h"
 _Bool SPI1_IsTxReady(void);
-# 46 "mcc_generated_files/uart/src/../../system/system.h" 2
+# 47 "mcc_generated_files/uart/src/../../system/system.h" 2
 
-# 1 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h" 1
-# 38 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
+# 1 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h" 1
+# 38 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h"
 # 1 "mcc_generated_files/uart/src/../../system/../timer/timer_interface.h" 1
 # 50 "mcc_generated_files/uart/src/../../system/../timer/timer_interface.h"
 struct TMR_INTERFACE
@@ -18747,40 +18781,7 @@ struct TMR_INTERFACE
     void (*TimeoutCallbackRegister)(void (* CallbackHandler)(void));
     void (*Tasks)(void);
 };
-# 38 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h" 2
-# 101 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-extern const struct TMR_INTERFACE Timer0;
-# 110 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-void TMR0_Initialize(void);
-# 119 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-void TMR0_Start(void);
-# 128 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-void TMR0_Stop(void);
-# 137 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-uint8_t TMR0_Read(void);
-# 146 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-void TMR0_Write(uint8_t timerVal);
-# 155 "mcc_generated_files/uart/src/../../system/../timer/tmr0.h"
-void TMR0_Reload(size_t periodVal);
-
-
-
-
-
-
-
-void TMR0_OverflowISR(void);
-
-
-
-
-
-
-
- void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
-# 47 "mcc_generated_files/uart/src/../../system/system.h" 2
-
-# 1 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h" 1
+# 38 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h" 2
 # 137 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h"
 extern const struct TMR_INTERFACE Timer1;
 # 146 "mcc_generated_files/uart/src/../../system/../timer/tmr1.h"

@@ -1,4 +1,4 @@
-# 1 "mcc_generated_files/timer/src/tmr0.c"
+# 1 "mcc_generated_files/capture/src/ccp2.c"
 # 1 "<built-in>" 1
 # 1 "<built-in>" 3
 # 288 "<built-in>" 3
@@ -6,8 +6,8 @@
 # 1 "<built-in>" 2
 # 1 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\language_support.h" 1 3
 # 2 "<built-in>" 2
-# 1 "mcc_generated_files/timer/src/tmr0.c" 2
-# 33 "mcc_generated_files/timer/src/tmr0.c"
+# 1 "mcc_generated_files/capture/src/ccp2.c" 2
+# 37 "mcc_generated_files/capture/src/ccp2.c"
 # 1 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\xc.h" 1 3
 # 18 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\xc.h" 3
 extern const char __xc8_OPTIM_SPEED;
@@ -18397,54 +18397,27 @@ extern __bank0 unsigned char __resetbits;
 extern __bank0 __bit __powerdown;
 extern __bank0 __bit __timeout;
 # 28 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\xc.h" 2 3
-# 33 "mcc_generated_files/timer/src/tmr0.c" 2
+# 37 "mcc_generated_files/capture/src/ccp2.c" 2
 
-# 1 "mcc_generated_files/timer/src/../tmr0.h" 1
-# 37 "mcc_generated_files/timer/src/../tmr0.h"
+# 1 "mcc_generated_files/capture/src/../ccp2.h" 1
+# 42 "mcc_generated_files/capture/src/../ccp2.h"
 # 1 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\stdbool.h" 1 3
-# 37 "mcc_generated_files/timer/src/../tmr0.h" 2
-
-# 1 "mcc_generated_files/timer/src/../timer_interface.h" 1
-# 42 "mcc_generated_files/timer/src/../timer_interface.h"
-# 1 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\stddef.h" 1 3
-# 19 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\stddef.h" 3
-# 1 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\bits/alltypes.h" 1 3
-# 138 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\bits/alltypes.h" 3
-typedef int ptrdiff_t;
-# 20 "C:\\Program Files\\Microchip\\xc8\\v2.46\\pic\\include\\c99\\stddef.h" 2 3
-# 42 "mcc_generated_files/timer/src/../timer_interface.h" 2
-
-
-
-
-
-
-
-
-struct TMR_INTERFACE
+# 42 "mcc_generated_files/capture/src/../ccp2.h" 2
+# 54 "mcc_generated_files/capture/src/../ccp2.h"
+typedef union CCPR2Reg_tag
 {
-    void (*Initialize)(void);
-    void (*Start)(void);
-    void (*Stop)(void);
-    void (*PeriodCountSet)(size_t count);
-    void (*TimeoutCallbackRegister)(void (* CallbackHandler)(void));
-    void (*Tasks)(void);
-};
-# 38 "mcc_generated_files/timer/src/../tmr0.h" 2
-# 101 "mcc_generated_files/timer/src/../tmr0.h"
-extern const struct TMR_INTERFACE Timer0;
-# 110 "mcc_generated_files/timer/src/../tmr0.h"
-void TMR0_Initialize(void);
-# 119 "mcc_generated_files/timer/src/../tmr0.h"
-void TMR0_Start(void);
-# 128 "mcc_generated_files/timer/src/../tmr0.h"
-void TMR0_Stop(void);
-# 137 "mcc_generated_files/timer/src/../tmr0.h"
-uint8_t TMR0_Read(void);
-# 146 "mcc_generated_files/timer/src/../tmr0.h"
-void TMR0_Write(uint8_t timerVal);
-# 155 "mcc_generated_files/timer/src/../tmr0.h"
-void TMR0_Reload(size_t periodVal);
+   struct
+   {
+      uint8_t ccpr2l;
+      uint8_t ccpr2h;
+   };
+   struct
+   {
+      uint16_t ccpr2_16Bit;
+   };
+} CCPR2_PERIOD_REG_T ;
+# 77 "mcc_generated_files/capture/src/../ccp2.h"
+void CCP2_Initialize(void);
 
 
 
@@ -18452,7 +18425,7 @@ void TMR0_Reload(size_t periodVal);
 
 
 
-void TMR0_OverflowISR(void);
+void CCP2_CaptureISR(void);
 
 
 
@@ -18460,101 +18433,60 @@ void TMR0_OverflowISR(void);
 
 
 
- void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
-# 34 "mcc_generated_files/timer/src/tmr0.c" 2
+void CCP2_SetCallBack(void (*customCallBack)(uint16_t));
+# 38 "mcc_generated_files/capture/src/ccp2.c" 2
 
 
+static void (*CCP2_CallBack)(uint16_t);
+# 52 "mcc_generated_files/capture/src/ccp2.c"
+static void CCP2_DefaultCallBack(uint16_t capturedValue) {
 
-const struct TMR_INTERFACE Timer0 = {
-    .Initialize = TMR0_Initialize,
-    .Start = TMR0_Start,
-    .Stop = TMR0_Stop,
-    .PeriodCountSet = TMR0_Reload,
-    .TimeoutCallbackRegister = TMR0_OverflowCallbackRegister,
-    .Tasks = ((void*)0)
-};
-
-static void (*TMR0_OverflowCallback)(void);
-static void TMR0_DefaultOverflowCallback(void);
-
-
-
-
-
-void TMR0_Initialize(void){
-
-
-    TMR0H = 0x9B;
-
-
-    TMR0L = 0x0;
-
-
-    T0CON1 = 0x58;
-
-
-
-    TMR0_OverflowCallbackRegister(TMR0_DefaultOverflowCallback);
-
-
-    PIR0bits.TMR0IF = 0;
-
-
-    PIE0bits.TMR0IE = 1;
-
-
-    T0CON0 = 0x80;
 }
 
-void TMR0_Start(void)
+void CCP2_Initialize(void)
 {
-    T0CON0bits.T0EN = 1;
+
+
+
+    CCP2CON = 0x86;
+
+
+    CCP2CAP = 0x0;
+
+
+    CCPR2H = 0x0;
+
+
+    CCPR2L = 0x0;
+
+
+    CCP2_SetCallBack(CCP2_DefaultCallBack);
+
+
+    CCPTMRS0bits.C2TSEL = 0x1;
+
+
+    PIR6bits.CCP2IF = 0;
+
+
+    PIE6bits.CCP2IE = 1;
 }
 
-void TMR0_Stop(void)
+void CCP2_CaptureISR(void)
 {
-    T0CON0bits.T0EN = 0;
+    CCPR2_PERIOD_REG_T module;
+
+
+    PIR6bits.CCP2IF = 0;
+
+
+    module.ccpr2l = CCPR2L;
+    module.ccpr2h = CCPR2H;
+
+
+    CCP2_CallBack(module.ccpr2_16Bit);
 }
 
-uint8_t TMR0_Read(void)
-{
-    uint8_t readVal;
-
-
-    readVal = TMR0L;
-
-    return readVal;
-}
-
-void TMR0_Write(uint8_t timerVal)
-{
-
-    TMR0L = timerVal;
- }
-
-void TMR0_Reload(size_t periodVal)
-{
-
-   TMR0H = (uint8_t)periodVal;
-}
-
-void TMR0_OverflowISR(void)
-{
-
-    PIR0bits.TMR0IF = 0;
-    if(TMR0_OverflowCallback)
-    {
-        TMR0_OverflowCallback();
-    }
-}
-
-void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void))
-{
-    TMR0_OverflowCallback = CallbackHandler;
-}
-
-static void TMR0_DefaultOverflowCallback(void)
-{
-
-
+void CCP2_SetCallBack(void (*customCallBack)(uint16_t)){
+    CCP2_CallBack = customCallBack;
 }

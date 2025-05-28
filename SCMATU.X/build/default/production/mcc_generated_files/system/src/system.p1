@@ -1,24 +1,24 @@
 Version 4.0 HI-TECH Software Intermediate Code
-[v F11566 `(v ~T0 @X0 0 tf ]
-[v F11573 `(v ~T0 @X0 0 tf ]
+[v F11583 `(v ~T0 @X0 0 tf ]
+[v F11590 `(v ~T0 @X0 0 tf ]
 "56 mcc_generated_files/system/src/../../system/clock.h
 [; ;mcc_generated_files/system/src/../../system/clock.h: 56: void CLOCK_Initialize(void);
 [v _CLOCK_Initialize `(v ~T0 @X0 0 ef ]
-"172 mcc_generated_files/system/src/../../system/pins.h
-[; ;mcc_generated_files/system/src/../../system/pins.h: 172: void PIN_MANAGER_Initialize (void);
+"191 mcc_generated_files/system/src/../../system/pins.h
+[; ;mcc_generated_files/system/src/../../system/pins.h: 191: void PIN_MANAGER_Initialize (void);
 [v _PIN_MANAGER_Initialize `(v ~T0 @X0 0 ef ]
 "77 mcc_generated_files/system/src/../../capture/ccp1.h
 [; ;mcc_generated_files/system/src/../../capture/ccp1.h: 77: void CCP1_Initialize(void);
 [v _CCP1_Initialize `(v ~T0 @X0 0 ef ]
+"77 mcc_generated_files/system/src/../../capture/ccp2.h
+[; ;mcc_generated_files/system/src/../../capture/ccp2.h: 77: void CCP2_Initialize(void);
+[v _CCP2_Initialize `(v ~T0 @X0 0 ef ]
 "120 mcc_generated_files/system/src/../../uart/eusart1.h
 [; ;mcc_generated_files/system/src/../../uart/eusart1.h: 120: void EUSART1_Initialize(void);
 [v _EUSART1_Initialize `(v ~T0 @X0 0 ef ]
 "126 mcc_generated_files/system/src/../../spi/mssp1.h
 [; ;mcc_generated_files/system/src/../../spi/mssp1.h: 126: void SPI1_Initialize(void);
 [v _SPI1_Initialize `(v ~T0 @X0 0 ef ]
-"110 mcc_generated_files/system/src/../../timer/tmr0.h
-[; ;mcc_generated_files/system/src/../../timer/tmr0.h: 110: void TMR0_Initialize(void);
-[v _TMR0_Initialize `(v ~T0 @X0 0 ef ]
 "146 mcc_generated_files/system/src/../../timer/tmr1.h
 [; ;mcc_generated_files/system/src/../../timer/tmr1.h: 146: void TMR1_Initialize(void);
 [v _TMR1_Initialize `(v ~T0 @X0 0 ef ]
@@ -1407,10 +1407,10 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; <" TOSH equ 01FEFh ;# ">
 "339 mcc_generated_files/system/src/../../uart/eusart1.h
 [; ;mcc_generated_files/system/src/../../uart/eusart1.h: 339: void (*EUSART1_TxInterruptHandler)(void);
-[v _EUSART1_TxInterruptHandler `*F11566 ~T0 @X0 1 e ]
+[v _EUSART1_TxInterruptHandler `*F11583 ~T0 @X0 1 e ]
 "364
 [; ;mcc_generated_files/system/src/../../uart/eusart1.h: 364: void (*EUSART1_RxInterruptHandler)(void);
-[v _EUSART1_RxInterruptHandler `*F11573 ~T0 @X0 1 e ]
+[v _EUSART1_RxInterruptHandler `*F11590 ~T0 @X0 1 e ]
 "39 mcc_generated_files/system/src/system.c
 [; ;mcc_generated_files/system/src/system.c: 39: void SYSTEM_Initialize(void)
 [v _SYSTEM_Initialize `(v ~T0 @X0 1 ef ]
@@ -1429,14 +1429,14 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;mcc_generated_files/system/src/system.c: 43:     CCP1_Initialize();
 [e ( _CCP1_Initialize ..  ]
 "44
-[; ;mcc_generated_files/system/src/system.c: 44:     EUSART1_Initialize();
-[e ( _EUSART1_Initialize ..  ]
+[; ;mcc_generated_files/system/src/system.c: 44:     CCP2_Initialize();
+[e ( _CCP2_Initialize ..  ]
 "45
-[; ;mcc_generated_files/system/src/system.c: 45:     SPI1_Initialize();
-[e ( _SPI1_Initialize ..  ]
+[; ;mcc_generated_files/system/src/system.c: 45:     EUSART1_Initialize();
+[e ( _EUSART1_Initialize ..  ]
 "46
-[; ;mcc_generated_files/system/src/system.c: 46:     TMR0_Initialize();
-[e ( _TMR0_Initialize ..  ]
+[; ;mcc_generated_files/system/src/system.c: 46:     SPI1_Initialize();
+[e ( _SPI1_Initialize ..  ]
 "47
 [; ;mcc_generated_files/system/src/system.c: 47:     TMR1_Initialize();
 [e ( _TMR1_Initialize ..  ]
@@ -1445,5 +1445,5 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e ( _INTERRUPT_Initialize ..  ]
 "49
 [; ;mcc_generated_files/system/src/system.c: 49: }
-[e :UE 1556 ]
+[e :UE 1559 ]
 }
