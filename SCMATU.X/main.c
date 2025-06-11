@@ -33,6 +33,17 @@ uint16_t CCP2_Captured_Values[2];
 uint16_t CCP2_Difference = 0;
 uint8_t iCCP2 = 0;
 
+bool CCP_Print = false;
+uint16_t CCP_Captured_Values[2];
+uint16_t CCP_Difference = 0;
+bool CCP_Capture_Complete = false;
+
+uint16_t timer_init_value = 0;
+
+uint8_t num_first_ints = 0;
+uint8_t num_second_ints = 0;
+
+bool previous_overflow = false;
 
 int main(void)
 {
@@ -72,11 +83,16 @@ int main(void)
     // Disable the CCP2 interrupt
     PIE6bits.CCP2IE = 0;
     
-
+    //TMR1_Reload();
+    //TMR1_Stop();
+    timer_init_value = TMR1_Read();
+    sprintf(buffer, "Timer init value: %u\r\n", timer_init_value);
+    EUSART1_SendString(buffer);
+    
     while(1)
     {
         UART_Receive();
-        if (CCP1_Print && CCP1_Difference > 0) {
+        /*if (CCP1_Print && CCP1_Difference > 0) {
             sprintf(buffer, "CCP First Capture: %u\r\n", CCP1_Captured_Values[0]);
             EUSART1_SendString(buffer);
             sprintf(buffer, "CCP Second Capture: %u\r\n", CCP1_Captured_Values[1]);
@@ -93,6 +109,43 @@ int main(void)
             sprintf(buffer, "CCP2 Difference: %u\r\n", CCP2_Difference);
             EUSART1_SendString(buffer);
             CCP2_Print = false;
+        }*/
+        if (CCP_Print && CCP_Capture_Complete)
+        {
+            if(CCP_Captured_Values[1] > CCP_Captured_Values[0])
+            {
+                //if(!previous_overflow)
+                //{
+                    CCP_Difference = CCP_Captured_Values[1] - CCP_Captured_Values[0];
+                //}
+                //else 
+               //{
+                    CCP_Difference = CCP_Captured_Values[0] - CCP_Captured_Values[1];
+                    //previous_overflow = false;
+                //}
+            }
+            else 
+            {
+                EUSART1_SendString("Overflow Detected\n");
+                //previous_overflow = true;
+                //CCP_Difference = CCP_Captured_Values[0] - CCP_Captured_Values[1];
+                //CCP_Difference = (65535 - CCP_Captured_Values[0]) + CCP_Captured_Values[1] + 1;
+                CCP_Difference = (65535 - CCP_Captured_Values[0]) + CCP_Captured_Values[1] + 1;
+            }
+            //sprintf(buffer, "Num First Capture ints : %u\r\n", num_first_ints);
+            //EUSART1_SendString(buffer);
+            //sprintf(buffer, "Num Second Capture ints: %u\r\n", num_second_ints);
+            //EUSART1_SendString(buffer);
+            sprintf(buffer, "CCP First Capture: %u\r\n", CCP_Captured_Values[0]);
+            EUSART1_SendString(buffer);
+            sprintf(buffer, "CCP Second Capture: %u\r\n", CCP_Captured_Values[1]);
+            EUSART1_SendString(buffer);
+            sprintf(buffer, "CCP Difference: %u\r\n", CCP_Difference);
+            EUSART1_SendString(buffer);
+            CCP_Print = false;
+            CCP_Capture_Complete = false;
+            CCP_Captured_Values[0] = 0;
+            CCP_Captured_Values[1] = 0;
         }
     }    
 }
@@ -119,7 +172,7 @@ void UART_Receive() {
                 {
                     sprintf(buffer, "CCP enabled\r\n"); // This is not happening
                     EUSART1_SendString(buffer);
-                    iCCP1 = 0;
+                    /*iCCP1 = 0;
                     CCP1_Captured_Values[0] = 0;
                     CCP1_Captured_Values[1] = 0; 
                     CCP1_Difference = 0;
@@ -128,7 +181,17 @@ void UART_Receive() {
                     CCP2_Captured_Values[0] = 0;
                     CCP2_Captured_Values[1] = 0; 
                     CCP2_Difference = 0;
-                    PIE6bits.CCP2IE = 1;  // Enable CCP2 interrupt
+                    PIE6bits.CCP2IE = 1;  // Enable CCP2 interrupt*/
+                    CCP_Captured_Values[0] = 0;
+                    CCP_Captured_Values[1] = 0; 
+                    CCP_Difference = 0;
+                    //TMR1_Reload();
+                    //timer_init_value = TMR1_Read();
+                    //sprintf(buffer, "Timer init value: %u\r\n", timer_init_value);
+                    //EUSART1_SendString(buffer);
+                    //TMR1_Start();
+                    PIE6bits.CCP1IE = 1;  // Enable CCP1 interrupt
+                    //PIE6bits.CCP2IE = 1;  // Enable CCP2 interrupt
                 }
                 else 
                 {
@@ -155,7 +218,7 @@ void UART_Receive() {
 }
 
 void CCP1_Interrupt_Handler(uint16_t value) {
-    CCP1_Captured_Values[iCCP1] = value;
+    /*CCP1_Captured_Values[iCCP1] = value;
     
     if(iCCP1 == 1)
     {
@@ -163,11 +226,15 @@ void CCP1_Interrupt_Handler(uint16_t value) {
         PIE6bits.CCP1IE = 0; // Disable the CCP1 interrupt
         CCP1_Print = true;
     }     
-    iCCP1 ^= 1;
+    iCCP1 ^= 1;*/
+    CCP_Captured_Values[0] = value;
+    PIE6bits.CCP1IE = 0; // Disable the CCP1 interrupt
+    PIE6bits.CCP2IE = 1;  // Enable CCP2 interrupt
+    num_first_ints++;
  }
 
 void CCP2_Interrupt_Handler(uint16_t value) {
-    CCP2_Captured_Values[iCCP2] = value;
+    /*CCP2_Captured_Values[iCCP2] = value;
     
     if(iCCP2 == 1)
     {
@@ -175,5 +242,13 @@ void CCP2_Interrupt_Handler(uint16_t value) {
         PIE6bits.CCP2IE = 0; // Disable the CCP2 interrupt
         CCP2_Print = true;
     }     
-    iCCP2 ^= 1;
+    iCCP2 ^= 1;*/
+    CCP_Captured_Values[1] = value;
+    //TMR1_Reload();
+    //TMR1_Stop();
+    PIE6bits.CCP2IE = 0; // Disable the CCP2 interrupt
+    CCP_Capture_Complete = true;
+    //TMR1_Reload();
+    num_second_ints++;
+    CCP_Print = true;
  }

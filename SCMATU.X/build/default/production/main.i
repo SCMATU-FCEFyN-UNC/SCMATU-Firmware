@@ -19196,6 +19196,17 @@ uint16_t CCP2_Captured_Values[2];
 uint16_t CCP2_Difference = 0;
 uint8_t iCCP2 = 0;
 
+_Bool CCP_Print = 0;
+uint16_t CCP_Captured_Values[2];
+uint16_t CCP_Difference = 0;
+_Bool CCP_Capture_Complete = 0;
+
+uint16_t timer_init_value = 0;
+
+uint8_t num_first_ints = 0;
+uint8_t num_second_ints = 0;
+
+_Bool previous_overflow = 0;
 
 int main(void)
 {
@@ -19236,26 +19247,51 @@ int main(void)
     PIE6bits.CCP2IE = 0;
 
 
+
+    timer_init_value = TMR1_Read();
+    sprintf(buffer, "Timer init value: %u\r\n", timer_init_value);
+    EUSART1_SendString(buffer);
+
     while(1)
     {
         UART_Receive();
-        if (CCP1_Print && CCP1_Difference > 0) {
-            sprintf(buffer, "CCP First Capture: %u\r\n", CCP1_Captured_Values[0]);
+# 113 "main.c"
+        if (CCP_Print && CCP_Capture_Complete)
+        {
+            if(CCP_Captured_Values[1] > CCP_Captured_Values[0])
+            {
+
+
+                    CCP_Difference = CCP_Captured_Values[1] - CCP_Captured_Values[0];
+
+
+
+                    CCP_Difference = CCP_Captured_Values[0] - CCP_Captured_Values[1];
+
+
+            }
+            else
+            {
+                EUSART1_SendString("Overflow Detected\n");
+
+
+
+                CCP_Difference = (65535 - CCP_Captured_Values[0]) + CCP_Captured_Values[1] + 1;
+            }
+
+
+
+
+            sprintf(buffer, "CCP First Capture: %u\r\n", CCP_Captured_Values[0]);
             EUSART1_SendString(buffer);
-            sprintf(buffer, "CCP Second Capture: %u\r\n", CCP1_Captured_Values[1]);
+            sprintf(buffer, "CCP Second Capture: %u\r\n", CCP_Captured_Values[1]);
             EUSART1_SendString(buffer);
-            sprintf(buffer, "CCP Difference: %u\r\n", CCP1_Difference);
+            sprintf(buffer, "CCP Difference: %u\r\n", CCP_Difference);
             EUSART1_SendString(buffer);
-            CCP1_Print = 0;
-        }
-        if (CCP2_Print && CCP2_Difference > 0) {
-            sprintf(buffer, "CCP2 First Capture: %u\r\n", CCP2_Captured_Values[0]);
-            EUSART1_SendString(buffer);
-            sprintf(buffer, "CCP2 Second Capture: %u\r\n", CCP2_Captured_Values[1]);
-            EUSART1_SendString(buffer);
-            sprintf(buffer, "CCP2 Difference: %u\r\n", CCP2_Difference);
-            EUSART1_SendString(buffer);
-            CCP2_Print = 0;
+            CCP_Print = 0;
+            CCP_Capture_Complete = 0;
+            CCP_Captured_Values[0] = 0;
+            CCP_Captured_Values[1] = 0;
         }
     }
 }
@@ -19282,16 +19318,17 @@ void UART_Receive() {
                 {
                     sprintf(buffer, "CCP enabled\r\n");
                     EUSART1_SendString(buffer);
-                    iCCP1 = 0;
-                    CCP1_Captured_Values[0] = 0;
-                    CCP1_Captured_Values[1] = 0;
-                    CCP1_Difference = 0;
+# 185 "main.c"
+                    CCP_Captured_Values[0] = 0;
+                    CCP_Captured_Values[1] = 0;
+                    CCP_Difference = 0;
+
+
+
+
+
                     PIE6bits.CCP1IE = 1;
-                    iCCP2 = 0;
-                    CCP2_Captured_Values[0] = 0;
-                    CCP2_Captured_Values[1] = 0;
-                    CCP2_Difference = 0;
-                    PIE6bits.CCP2IE = 1;
+
                 }
                 else
                 {
@@ -19318,25 +19355,21 @@ void UART_Receive() {
 }
 
 void CCP1_Interrupt_Handler(uint16_t value) {
-    CCP1_Captured_Values[iCCP1] = value;
-
-    if(iCCP1 == 1)
-    {
-        CCP1_Difference = CCP1_Captured_Values[1] - CCP1_Captured_Values[0];
-        PIE6bits.CCP1IE = 0;
-        CCP1_Print = 1;
-    }
-    iCCP1 ^= 1;
+# 230 "main.c"
+    CCP_Captured_Values[0] = value;
+    PIE6bits.CCP1IE = 0;
+    PIE6bits.CCP2IE = 1;
+    num_first_ints++;
  }
 
 void CCP2_Interrupt_Handler(uint16_t value) {
-    CCP2_Captured_Values[iCCP2] = value;
+# 246 "main.c"
+    CCP_Captured_Values[1] = value;
 
-    if(iCCP2 == 1)
-    {
-        CCP2_Difference = CCP2_Captured_Values[1] - CCP2_Captured_Values[0];
-        PIE6bits.CCP2IE = 0;
-        CCP2_Print = 1;
-    }
-    iCCP2 ^= 1;
+
+    PIE6bits.CCP2IE = 0;
+    CCP_Capture_Complete = 1;
+
+    num_second_ints++;
+    CCP_Print = 1;
  }
