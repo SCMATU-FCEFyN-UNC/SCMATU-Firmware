@@ -1,6 +1,6 @@
 # MPLAB X auto-generated build files
-#*.X/dist/
-#*.X/build/
+*.X/dist/
+*.X/build/
 *.X/nbproject/private/Makefile-*.mk
 *.X/nbproject/Makefile-*.mk
 *.X/nbproject/private/configurations.xml
