@@ -735,7 +735,7 @@ static nmbs_error handle_write_single_coil(nmbs_t* nmbs) {
             err = nmbs->callbacks.write_single_coil(address,value, nmbs->msg.unit_id, nmbs->platform.arg);
             if (err != NMBS_ERROR_NONE) {
                 if (nmbs_error_is_exception(err))
-                    return send_exception_msg(nmbs, err);
+                    return (nmbs_error)send_exception_msg(nmbs, err);
 
                 return send_exception_msg(nmbs, NMBS_EXCEPTION_SERVER_DEVICE_FAILURE);
             }

@@ -5,6 +5,7 @@
 #include "AD9833.h" // Library to control AD9833 signal generator
 #include "nanomodbus.h" // Library to control AD9833 signal generator
 #include "modbus_imp.h" // Library to control AD9833 signal generator
+#include "nvm_config.h" // Library to control AD9833 signal generator
 
 // Actuator Control Variables
 uint32_t desiredFrequency = 150;
@@ -75,7 +76,7 @@ int main(void)
         // check_error_modbus(err)  // Handle error
         //while(1){}                  // Halt if unable to create modbus server 
     }
-
+      
     while(1)
     {
         err = nmbs_server_poll(&nmbs);
@@ -86,7 +87,7 @@ int main(void)
         else
         {
             // Handle changes in Holding Registers
-            holding_register_change_handler(&modbus_data, &prev_holding_regs); // &nmbs
+            holding_register_change_handler(&modbus_data, &prev_holding_regs, &nmbs); 
             // Handle changes in coil registers
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 0))
             {
@@ -94,7 +95,7 @@ int main(void)
             }
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 1) || nmbs_bitfield_read(modbus_data.server_coils.coils, 2)) //* 1  | Measure All (Phase and Power) | Measure Power
             {
-                modbus_data.server_input_register.power_output = 50;            // Repplace 50 with the actual calculated power output using two ADC channels
+                modbus_data.server_input_register.power_output = 50;            // Replace 50 with the actual calculated power output using two ADC channels
             }
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 1) || nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) //* 1  | Measure All (Phase and Power) | Measure Phase
             {

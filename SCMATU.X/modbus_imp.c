@@ -18,22 +18,12 @@
 #include "mcc_generated_files/system/system.h"
 #include <xc.h>
 #include "modbus_imp.h"
+#include "nvm_config.h"
 #include "eusart1_utils.h"
 #include "AD9833.h"
 
-int32_t read_serial(uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg) {
-    
-    /*int32_t charCount = 0;
-    uint8_t c;
-    
-    while(charCount != count)
-    {
-            c = EUSART1_Read();
-            buf[charCount++] = c;
-    }
-//    EUSART1_Write(*buf);
-//    while(!EUSART1_is_tx_done());
-    return charCount;*/
+int32_t read_serial(uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg) 
+{    
     int32_t charCount = 0;
     uint32_t timeout = 50000; // Adjust as needed
 
@@ -150,9 +140,7 @@ void default_values_register(mod_bus_registers* registers)
     m_memset(&(registers->server_coils),            0 ,sizeof(registers->server_coils));
     m_memset(&(registers->server_input_register),   0 ,sizeof(registers->server_input_register));
     m_memset(&(registers->server_holding_register), 0 ,sizeof(registers->server_holding_register));
-    
-    registers->server_holding_register.addr_slave       = RTU_SERVER_ADDRESS_DEFAULT;
-    registers->server_holding_register.baudrate         = RTU_BAUDRATE_DEFAULT;
+        
     registers->server_holding_register.frequency_hi     = DEFAULT_FRECUENCY_HIGH;
     registers->server_holding_register.frequency_lo     = DEFAULT_FRECUENCY_LOW;
     registers->server_holding_register.voltage_level    = DEFAULT_VOLTAGE_LEVEL;
@@ -170,22 +158,54 @@ void default_values_register(mod_bus_registers* registers)
     registers->server_input_register.resonance_status   = 0;
     registers->server_input_register.system_status      = 0;
     registers->server_input_register.last_error         = 0;
+    
+    // Slave Number and Baudrate could have been stored in the Nov Volatile Memory
+    // The first time the NVM is written we write NVM_CONFIG_MAGIC in the first address to indicate that the NVM contains usable data.
+    while (NVM_IsBusy());   // Wait until the NVM is ready before reding
+    if(EEPROM_Read(EEPROM_MAGIC_ADDR) != EEPROM_CONFIG_MAGIC)
+    {
+        registers->server_holding_register.addr_slave       = RTU_SERVER_ADDRESS_DEFAULT;
+        registers->server_holding_register.baudrate         = RTU_BAUDRATE_DEFAULT;
+        registers->server_input_register.sensor_type        = RTU_SENSOR_TYPE_DEFAULT;
+        registers->server_input_register.serial_number      = RTU_SERIAL_NUMBER_DEFAULT;
+        // Then load them into the NVM
+        NVM_UnlockKeySet(UNLOCK_KEY); 
+        while (NVM_IsBusy()); 
+        EEPROM_Write(EEPROM_MAGIC_ADDR, EEPROM_CONFIG_MAGIC);
+        EEPROM_WriteWord(EEPROM_ADDR_SLAVE_ADDR, RTU_SERVER_ADDRESS_DEFAULT);
+        EEPROM_WriteWord(EEPROM_BAUDRATE_ADDR, RTU_BAUDRATE_DEFAULT);
+        EEPROM_WriteWord(SENSOR_TYPE_ADDR, RTU_SENSOR_TYPE_DEFAULT);
+        EEPROM_WriteWord(SERIAL_NUMBER_ADDR, RTU_SERIAL_NUMBER_DEFAULT);
+    }
+    else
+    {
+        // Load values from EEPROM NVM
+        registers->server_holding_register.addr_slave     = EEPROM_ReadWord(EEPROM_ADDR_SLAVE_ADDR);
+        registers->server_holding_register.baudrate       = EEPROM_ReadWord(EEPROM_BAUDRATE_ADDR);
+        EUSART1_SetBaudRate(registers->server_holding_register.baudrate);
+        registers->server_input_register.sensor_type      = EEPROM_ReadWord(SENSOR_TYPE_ADDR);
+        registers->server_input_register.serial_number    = EEPROM_ReadWord(SERIAL_NUMBER_ADDR);
+        registers->server_input_register.sensor_type      = 999;
+    }
 }
 
-void holding_register_change_handler(mod_bus_registers* modbus_data,holding_register* prev_holding_regs) // nmbs_t* nmbs 
-{
+void holding_register_change_handler(mod_bus_registers* modbus_data,holding_register* prev_holding_regs, nmbs_t* nmbs) // nmbs_t* nmbs 
+{    
     // Check for Salve Num (RTU Address) change
     if(modbus_data->server_holding_register.addr_slave != prev_holding_regs->addr_slave)
     {
-        prev_holding_regs->addr_slave = modbus_data->server_holding_register.addr_slave;
+        prev_holding_regs->addr_slave = modbus_data->server_holding_register.addr_slave;                // Update previous holding register value
+        EEPROM_WriteWord(EEPROM_ADDR_SLAVE_ADDR, modbus_data->server_holding_register.addr_slave);      // Update non volatile memory  
+        nmbs->address_rtu = (uint8_t)modbus_data->server_holding_register.addr_slave;                   // Update modbus server slave address
     }
     
     // Check for baudrate changes 
     if(modbus_data->server_holding_register.baudrate != prev_holding_regs->baudrate)
     {
-        if(EUSART1_SetBaudRate(modbus_data->server_holding_register.baudrate))          // Returns true on success
+        if(EUSART1_SetBaudRate(modbus_data->server_holding_register.baudrate))              // Set UART Baudrate to the new value. This returns true on success
         {
-            prev_holding_regs->baudrate = modbus_data->server_holding_register.baudrate;
+            prev_holding_regs->baudrate = modbus_data->server_holding_register.baudrate;    // Update shadow copy with the new value
+            EEPROM_WriteWord(EEPROM_BAUDRATE_ADDR, modbus_data->server_holding_register.baudrate);
         }
         else
         {
@@ -230,6 +250,22 @@ void holding_register_change_handler(mod_bus_registers* modbus_data,holding_regi
     {
         prev_holding_regs->off_time_ms = modbus_data->server_holding_register.off_time_ms;
     }
+}
+
+void single_16_bit_nvm_write(uint16_t value)
+{
+    /*flash_address_t base = NVM_CONFIG_BASE_ADDR;
+    flash_data_t flash_row[PROGMEM_PAGE_SIZE] = {0};  // Ensure size matches page size (e.g., 32)
+    
+    // Step 1: Read current flash content into flash_row
+    for (uint8_t i = 0; i < PROGMEM_PAGE_SIZE; i++) 
+    {
+        flash_row[i] = FLASH_Read(base + i);
+    }
+    
+    // Step 2: Modify only the changed value
+    flash_row[NVM_ADDR_SLAVE_OFFSET]*/ 
+    
 }
 
 void check_error_modbus(nmbs_error err)

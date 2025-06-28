@@ -2,7 +2,7 @@
 
 manifest_file_version: 1.0.0
 project: SCMATU-Firmware
-creation_date: 2025-06-16T19:18:01.835-03:00[America/Buenos_Aires]
+creation_date: 2025-06-18T14:28:01.847-03:00[America/Buenos_Aires]
 operating_system: Windows 10
 mcc_mode: IDE
 mcc_mode_version: v6.20
@@ -24,6 +24,7 @@ modules:
 - {name: '@mchp-mcc/pin-content-processor', type: MELODY, version: 3.8.0}
 - {name: '@mchp-mcc/scf-pic8-eusart-v1', type: MELODY, version: 7.1.5}
 - {name: '@mchp-mcc/scf-pic8-interrupt-v2', type: MELODY, version: 5.2.11}
+- {name: '@mchp-mcc/scf-pic8-memory-v2', type: MELODY, version: 5.0.2}
 - {name: '@mchp-mcc/scf-pic8-mssp-v1', type: MELODY, version: 7.0.1}
 - {name: '@mchp-mcc/scf-pic8-osc-v1', type: MELODY, version: 4.3.7}
 - {name: '@mchp-mcc/spi-host-driver', type: MELODY, version: 1.2.0}

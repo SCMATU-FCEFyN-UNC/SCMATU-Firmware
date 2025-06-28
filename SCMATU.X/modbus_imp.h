@@ -66,15 +66,6 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_ON_TIME_MS          500
 #define DEFAULT_OFF_TIME_MS         500
 
-// EEPROM Configuration Flags (determine whether to use default (RAM) values or previously saved (EEPROM) ones.)    
-#define IS_IN_MEMORY_VALUE          0x00    // Use defaults (RAM)
-#define IS_IN_MEMORY_EPP_ADDR       0x7001  // EEPROM address for the flag  
-// In memory addresses for the content that goes into holding registers
-#define SLAVE_EPP_ADDR              0x7002
-#define BAUDRATE_EPP_ADDR           0x7004
-
-
-
 typedef struct
 {
     uint16_t addr_slave;            // 40000 - Holding Register 0 - Slave Num
@@ -93,9 +84,6 @@ typedef struct
 /* Input registers contain:
  * The sensor type (In this case defined as code 100 -> Energy Board)
  * The sensor´s/board´s serial number (in this case 1, later to be changed for a defined convention) */
-
-#define SENSOR_TYPE_ADDR        0
-#define SERIAL_NUMBER_ADDR      1       // Input Register 0 
 
 // Default Values for Input Registers
 #define RTU_SERIAL_NUMBER_DEFAULT   1
@@ -134,7 +122,11 @@ void set_holding_regs_to_default(holding_register* regs);
 // Initializes Modbus register structures with default values.
 void default_values_register(mod_bus_registers* registers);
 
-void holding_register_change_handler(mod_bus_registers* registers,holding_register* prev_holding_regs); // nmbs_t* nmbs 
+// Handles and updates the registers and the NVM when holding registers are written
+void holding_register_change_handler(mod_bus_registers* registers,holding_register* prev_holding_regs, nmbs_t* nmbs); // nmbs_t* nmbs 
+
+// Writes a single 16 bit value into the NVM without deleting the rest of the row
+void single_16_bit_nvm_write(uint16_t value);
 
 // Handles and processes Modbus error codes (currently commented out).
 void check_error_modbus(nmbs_error err); 
