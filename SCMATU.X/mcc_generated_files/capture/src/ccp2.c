@@ -57,8 +57,8 @@ void CCP2_Initialize(void)
 {
     // Set the CCP2 to the options selected in the User Interface
 
-    // CCPM 4th rising edge; EN enabled; FMT right_aligned; 
-    CCP2CON = 0x86;
+    // CCPM 16th rising edge; EN enabled; FMT right_aligned; 
+    CCP2CON = 0x87;
 
     // CTS CCP2 pin; 
     CCP2CAP = 0x0;

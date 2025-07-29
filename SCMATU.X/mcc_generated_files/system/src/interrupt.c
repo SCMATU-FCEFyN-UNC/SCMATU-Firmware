@@ -59,27 +59,19 @@ void  INTERRUPT_Initialize (void)
 void __interrupt() INTERRUPT_InterruptManager (void)
 {
     // interrupt handler
-    if(PIE0bits.IOCIE == 1 && PIR0bits.IOCIF == 1)
+    if(INTCONbits.PEIE == 1)
     {
-        PIN_MANAGER_IOC();
-    }
-    else if(INTCONbits.PEIE == 1)
-    {
-        if(PIE3bits.TX1IE == 1 && PIR3bits.TX1IF == 1)
-        {
-            EUSART1_TxInterruptHandler();
-        } 
-        else if(PIE3bits.RC1IE == 1 && PIR3bits.RC1IF == 1)
-        {
-            EUSART1_RxInterruptHandler();
-        } 
-        else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
+        if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
         {
             CCP1_CaptureISR();
         } 
         else if(PIE6bits.CCP2IE == 1 && PIR6bits.CCP2IF == 1)
         {
             CCP2_CaptureISR();
+        } 
+        else if(PIE0bits.TMR0IE == 1 && PIR0bits.TMR0IF == 1)
+        {
+            TMR0_ISR();
         } 
         else
         {
