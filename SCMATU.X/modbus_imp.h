@@ -94,15 +94,15 @@ typedef struct
     uint16_t sensor_type;               // 30000 - Input Register 0 - Code for phase/resonance/power sensor
     uint16_t serial_number;             // 30001 - Input Register 1 - Sensor´s serial number
        
-    uint16_t power_output;              // 30003 - Input Register 2 - Measured Output Power [W])
-    int16_t  phase_difference;          // 30004 - Input Register 3 - Phase between V and I
-    uint16_t voltage_rms;               // 30005 - Input Register 4 - RMS Voltage
-    uint16_t current_rms;               // 30006 - Input Register 5 - RMS Current
-    uint16_t resonance_freq_hi;         // 30007 - Input Register 6 - Obtained Resonance Frecuency (high part, big endian)
-    uint16_t resonance_freq_lo;         // 30008 - Input Register 7 - Obtained Resonance Frecuency (low part, big endian))
-    uint16_t resonance_status;          // 30009 - Input Register 8 - (1 = resonance, 0 = no)
-    uint16_t system_status;             // 30010 - Input Register 9 - System Status
-    uint16_t last_error;                // 30011 - Input Register 10 - Last Error
+    uint16_t power_output;              // 30002 - Input Register 2 - Measured Output Power [W])
+    uint16_t phase_difference;          // 30003 - Input Register 3 - Phase between V and I
+    uint16_t voltage_rms;               // 30004 - Input Register 4 - RMS Voltage
+    uint16_t current_rms;               // 30005 - Input Register 5 - RMS Current
+    uint16_t resonance_freq_hi;         // 30006 - Input Register 6 - Obtained Resonance Frecuency (high part, big endian)
+    uint16_t resonance_freq_lo;         // 30007 - Input Register 7 - Obtained Resonance Frecuency (low part, big endian))
+    uint16_t resonance_status;          // 30008 - Input Register 8 - (1 = resonance, 0 = no)
+    uint16_t system_status;             // 30009 - Input Register 9 - System Status
+    uint16_t last_error;                // 30010 - Input Register 10 - Last Error
 }input_register;
 // ---------------------------------------------------------------------------------------------
 
