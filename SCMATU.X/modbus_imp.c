@@ -214,24 +214,21 @@ void holding_register_change_handler(mod_bus_registers* modbus_data,holding_regi
     }
     
     // Check for changes in fecuency registers
-    uint16_t prev_fecuency_hi = prev_holding_regs->frequency_hi;
     uint16_t new_frecuency_hi = modbus_data->server_holding_register.frequency_hi;
-    uint16_t prev_fecuency_lo = prev_holding_regs->frequency_lo;
     uint16_t new_frecuency_lo = modbus_data->server_holding_register.frequency_lo;
     
-    if(new_frecuency_hi != prev_fecuency_hi)
+    extern uint32_t desired_frequency;
+    uint32_t previous_frequency = 0;
+    
+    previous_frequency = desired_frequency;
+    
+    desired_frequency = ((uint32_t)new_frecuency_hi << 16) | new_frecuency_lo;
+    
+    if(desired_frequency != previous_frequency)
     {
-        prev_holding_regs->frequency_hi = modbus_data->server_holding_register.frequency_hi;
+        AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
     }
     
-    uint32_t desiredFrequency = 140000;
-    
-    if(new_frecuency_lo !=  prev_fecuency_lo)
-    {
-        desiredFrequency = ((uint32_t)new_frecuency_hi << 16) | new_frecuency_lo;
-        AD9833SetFrequency(AD9833_REG_FREQ0, desiredFrequency);
-        prev_holding_regs->frequency_lo = modbus_data->server_holding_register.frequency_lo;
-    }
     
     // Check for changes in voltage level
     if(modbus_data->server_holding_register.voltage_level != prev_holding_regs->voltage_level)

@@ -79,7 +79,7 @@ void CCP1_Initialize(void)
     PIR6bits.CCP1IF = 0;    
 
     // Enable the CCP1 interrupt
-    PIE6bits.CCP1IE = 1;
+    PIE6bits.CCP1IE = 0;
 }
 
 void CCP1_CaptureISR(void)

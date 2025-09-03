@@ -7,7 +7,7 @@
  * 
  * @brief This file contains the API implementation for the Interrupt Manager driver.
  * 
- * @version Interrupt Manager Driver Version 2.0.5
+ * @version Interrupt Manager Driver Version 2.0.6
 */
 
 /*
@@ -59,11 +59,7 @@ void  INTERRUPT_Initialize (void)
 void __interrupt() INTERRUPT_InterruptManager (void)
 {
     // interrupt handler
-    if(PIE0bits.IOCIE == 1 && PIR0bits.IOCIF == 1)
-    {
-        PIN_MANAGER_IOC();
-    }
-    else if(INTCONbits.PEIE == 1)
+    if(INTCONbits.PEIE == 1)
     {
         if(PIE6bits.CCP2IE == 1 && PIR6bits.CCP2IF == 1)
         {
@@ -72,10 +68,6 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         else if(PIE6bits.CCP1IE == 1 && PIR6bits.CCP1IF == 1)
         {
             CCP1_CaptureISR();
-        } 
-        else if(PIE0bits.TMR0IE == 1 && PIR0bits.TMR0IF == 1)
-        {
-            TMR0_ISR();
         } 
         else
         {

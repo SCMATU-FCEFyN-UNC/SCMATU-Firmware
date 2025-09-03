@@ -40,7 +40,6 @@ void SYSTEM_Initialize(void)
 {
     CLOCK_Initialize();
     PIN_MANAGER_Initialize();
-    TMR0_Initialize();
     CCP1_Initialize();
     CCP2_Initialize();
     EUSART1_Initialize();

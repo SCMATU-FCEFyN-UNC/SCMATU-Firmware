@@ -5,9 +5,9 @@
  * 
  * @ingroup eusart1
  * 
- * @brief This is the generated driver implementation file for the EUSART1 driver using CCL
+ * @brief This is the generated driver implementation file for the EUSART1 driver using the Enhanced Universal Synchronous and Asynchronous Receiver Transceiver (EUSART) module.
  *
- * @version EUSART1 Driver Version 3.0.0
+ * @version EUSART1 Driver Version 3.0.2
 */
 
 /*
@@ -74,14 +74,19 @@ const uart_drv_interface_t UART1 = {
 /**
   Section: EUSART1 variables
 */
-volatile eusart1_status_t eusart1RxLastError;
+/**
+ * @misradeviation{@advisory,19.2}
+ * The UART error status necessitates checking the bitfield and accessing the status within the group byte therefore the use of a union is essential.
+ */
+ /* cppcheck-suppress misra-c2012-19.2 */
+static volatile eusart1_status_t eusart1RxLastError;
 
 /**
   Section: EUSART1 APIs
 */
 
-void (*EUSART1_FramingErrorHandler)(void);
-void (*EUSART1_OverrunErrorHandler)(void);
+static void (*EUSART1_FramingErrorHandler)(void) = NULL;
+static void (*EUSART1_OverrunErrorHandler)(void) = NULL;
 
 static void EUSART1_DefaultFramingErrorCallback(void);
 static void EUSART1_DefaultOverrunErrorCallback(void);
@@ -121,49 +126,49 @@ void EUSART1_Deinitialize(void)
     SP1BRGH = 0x00;
 }
 
-inline void EUSART1_Enable(void)
+void EUSART1_Enable(void)
 {
     RC1STAbits.SPEN = 1;
 
 }
 
-inline void EUSART1_Disable(void)
+void EUSART1_Disable(void)
 {
     RC1STAbits.SPEN = 0;
 }
 
 
-inline void EUSART1_TransmitEnable(void)
+void EUSART1_TransmitEnable(void)
 {
     TX1STAbits.TXEN = 1;
 }
 
-inline void EUSART1_TransmitDisable(void)
+void EUSART1_TransmitDisable(void)
 {
     TX1STAbits.TXEN = 0;
 }
 
-inline void EUSART1_ReceiveEnable(void)
+void EUSART1_ReceiveEnable(void)
 {
     RC1STAbits.CREN = 1;
 }
 
-inline void EUSART1_ReceiveDisable(void)
+void EUSART1_ReceiveDisable(void)
 {
     RC1STAbits.CREN = 0;
 }
 
-inline void EUSART1_SendBreakControlEnable(void)
+void EUSART1_SendBreakControlEnable(void)
 {
     TX1STAbits.SENDB = 1;
 }
 
-inline void EUSART1_SendBreakControlDisable(void)
+void EUSART1_SendBreakControlDisable(void)
 {
     TX1STAbits.SENDB = 0;
 }
 
-inline void EUSART1_AutoBaudSet(bool enable)
+void EUSART1_AutoBaudSet(bool enable)
 {
     if(enable)
     {
@@ -175,17 +180,17 @@ inline void EUSART1_AutoBaudSet(bool enable)
     }
 }
 
-inline bool EUSART1_AutoBaudQuery(void)
+bool EUSART1_AutoBaudQuery(void)
 {
 return (bool)(!BAUD1CONbits.ABDEN);
 }
 
-inline bool EUSART1_IsAutoBaudDetectOverflow(void)
+bool EUSART1_IsAutoBaudDetectOverflow(void)
 {
     return (bool)BAUD1CONbits.ABDOVF; 
 }
 
-inline void EUSART1_AutoBaudDetectOverflowReset(void)
+void EUSART1_AutoBaudDetectOverflowReset(void)
 {
     BAUD1CONbits.ABDOVF = 0; 
 }
@@ -213,7 +218,7 @@ size_t EUSART1_ErrorGet(void)
 uint8_t EUSART1_Read(void)
 {
     eusart1RxLastError.status = 0;
-    if(RC1STAbits.OERR)
+    if(true == RC1STAbits.OERR)
     {
         eusart1RxLastError.oerr = 1;
         if(NULL != EUSART1_OverrunErrorHandler)
@@ -221,7 +226,7 @@ uint8_t EUSART1_Read(void)
             EUSART1_OverrunErrorHandler();
         }   
     }
-    if(RC1STAbits.FERR)
+    if(true == RC1STAbits.FERR)
     {
         eusart1RxLastError.ferr = 1;
         if(NULL != EUSART1_FramingErrorHandler)

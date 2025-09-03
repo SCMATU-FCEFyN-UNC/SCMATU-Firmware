@@ -57,8 +57,8 @@ void CCP2_Initialize(void)
 {
     // Set the CCP2 to the options selected in the User Interface
 
-    // CCPM 16th rising edge; EN enabled; FMT right_aligned; 
-    CCP2CON = 0x87;
+    // CCPM Rising edge; EN enabled; FMT right_aligned; 
+    CCP2CON = 0x85;
 
     // CTS CCP2 pin; 
     CCP2CAP = 0x0;
@@ -79,7 +79,7 @@ void CCP2_Initialize(void)
     PIR6bits.CCP2IF = 0;    
 
     // Enable the CCP2 interrupt
-    PIE6bits.CCP2IE = 1;
+    PIE6bits.CCP2IE = 0;
 }
 
 void CCP2_CaptureISR(void)
