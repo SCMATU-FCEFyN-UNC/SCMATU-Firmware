@@ -7,6 +7,10 @@
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
+        <logicalFolder name="adc" displayName="adc" projectFiles="true">
+          <itemPath>mcc_generated_files/adc/adc.h</itemPath>
+          <itemPath>mcc_generated_files/adc/adc_types.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="capture" displayName="capture" projectFiles="true">
           <itemPath>mcc_generated_files/capture/ccp1.h</itemPath>
           <itemPath>mcc_generated_files/capture/ccp2.h</itemPath>
@@ -58,6 +62,11 @@
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
+        <logicalFolder name="adc" displayName="adc" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/adc/src/adc.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
         <logicalFolder name="capture" displayName="capture" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
             <itemPath>mcc_generated_files/capture/src/ccp1.c</itemPath>

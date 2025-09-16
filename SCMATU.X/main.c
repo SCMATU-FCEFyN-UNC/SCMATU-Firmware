@@ -28,6 +28,14 @@ bool measurement_ready = false;
 void CCP1_Interrupt_Handler(uint16_t value);
 void CCP2_Interrupt_Handler(uint16_t value);
 
+// ADC (Peak-Detectors - Voltage and Current Measurements) Variables & Functions
+uint16_t ADC_peak_voltage;
+uint16_t ADC_peak_current;
+adc_channel_t VRLCr_PEAK = ADC_CHANNEL_ANC5;
+adc_channel_t Vr_PEAK = ADC_CHANNEL_ANC4; 
+
+uint16_t get_ADC_measurement(adc_channel_t channel);
+
 int main(void)
 {
     SYSTEM_Initialize();
@@ -57,7 +65,6 @@ int main(void)
     CCP1CONbits.EN = 0; 
     CCP2CONbits.EN = 0; //Disables the CCP2 module (puts the peripheral in reset
     TEST_SetLow();
-    
     // Link each ISR to custom handlers
     CCP1_SetCallBack(&CCP1_Interrupt_Handler);
     CCP2_SetCallBack(&CCP2_Interrupt_Handler);
@@ -110,6 +117,8 @@ int main(void)
     modbus_data.server_holding_register.frequency_hi = (desired_frequency >> 16) & 0xFFFF;
     modbus_data.server_holding_register.frequency_lo = desired_frequency & 0xFFFF;
     
+    ADC_Enable();
+    
     while(1)
     {
         err = nmbs_server_poll(&nmbs);
@@ -128,7 +137,12 @@ int main(void)
             }
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 1) || nmbs_bitfield_read(modbus_data.server_coils.coils, 2)) //* 1  | Measure All (Phase and Power) | Measure Power
             {
-                modbus_data.server_input_register.power_output = 50;            // Replace 50 with the actual calculated power output using two ADC channels
+                // Perform measurement
+                ADC_peak_voltage = get_ADC_measurement(VRLCr_PEAK);
+                ADC_peak_current = get_ADC_measurement(Vr_PEAK);
+                // Store measurement
+                modbus_data.server_input_register.ADC_peak_voltage = ADC_peak_voltage;
+                modbus_data.server_input_register.ADC_peak_current = ADC_peak_current;
             }
             if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
                 nmbs_bitfield_read(modbus_data.server_coils.coils, 3))
@@ -143,14 +157,6 @@ int main(void)
                 PIE6bits.CCP2IE = 0;
                 // clear coil bit so it can be triggered again later
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
-            }
-            
-            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) //* 4  | Start frequency sweep - Auto-determine resonance frecuency
-            {
-                // resonance_freq = auto_detect_res_freq();                     // Replace with proper function to autp-detect resonance frequency
-                // modbus_data.server_input_register.resonance_freq_hi = (resonance_freq >> 16) & 0xFFFF;
-                // modbus_data.server_input_register.resonance_freq_lo = resonance_freq & 0xFFFF;
-                // modbus_data.server_input_register.resonance_status = true;
             }
         } 
         
@@ -184,8 +190,28 @@ void CCP2_Interrupt_Handler(uint16_t value) {
     CCP2CONbits.EN = 0;     // Disable CCP2 peripheral
     PIE6bits.CCP2IE = 0;    // Disable CCP2 Interrupt
     PIR6bits.CCP1IF = 0;    // Clear CCP1 Interrupt Flag (prevents immediate execution of CCP1 ISR due to previous interrupts)
+    PIR6bits.CCP2IF = 0; 
     // These two following lines need to be uncommented in order to visualize measured period via TEST pin.
     // CCP1CONbits.EN = 1;  // Re-enable CCP1 peripheral for continuous phase measuring
     // PIE6bits.CCP1IE = 1; // Re-enable CCP1 Interrupt for continuous phase measuring. 
     measurement_ready = true;   // Once the measurement is ready, the values can be stored into modbus registers.
+}
+
+uint16_t get_ADC_measurement(adc_channel_t channel)
+{
+    adc_result_t ADC_result = 0;
+    
+    // Select the ADC channel
+    ADC_ChannelSelect(channel);
+
+    // Start the conversion
+    ADC_ConversionStart();
+
+    // Wait for the conversion to complete
+    while (!ADC_IsConversionDone());
+
+    // Get the conversion result
+    ADC_result = ADC_ConversionResultGet();
+    
+    return (uint16_t)ADC_result;
 }

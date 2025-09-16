@@ -33,8 +33,8 @@ extern "C" {
     
 // ------------------- Modbus Limits -------------------
 #define COILS_ADDR_MAX          4
-#define REGS_INPUT_ADDR_MAX     10
-#define REGS_HOLDING_ADDR_MAX   8
+#define REGS_INPUT_ADDR_MAX     8
+#define REGS_HOLDING_ADDR_MAX   9
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
 
@@ -45,9 +45,8 @@ extern "C" {
  * 1            | Measure All (Phase and Power)
  * 2            | Measure Power
  * 3            | Measure Phase
- * 4            | Start frequency sweep - Auto-determine resonance frecuency
- * 5            | Save current settings
- * 6            | Reserved
+ * 4            | Save current settings
+ * 5            | Reserved
  */
 typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 {
@@ -65,17 +64,21 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_VOLTAGE_LEVEL       100
 #define DEFAULT_ON_TIME_MS          500
 #define DEFAULT_OFF_TIME_MS         500
+#define DEFAULT_VOLT_AD_GAIN        4188    // Vout = Vin*0.4188 
+#define DEFAULT_CURR_AD_GAIN        39493   // Vout = Vin*39.493
 
 typedef struct
 {
-    uint16_t addr_slave;            // 40000 - Holding Register 0 - Slave Num
-    uint16_t baudrate;              // 40001 - Holding Register 1 - COM Baudrate (9600 default))
+    uint16_t addr_slave;                // 40000 - Holding Register 0 - Slave Num
+    uint16_t baudrate;                  // 40001 - Holding Register 1 - COM Baudrate (9600 default))
     
-    uint16_t frequency_hi;          // 40002 - Holding Register 2 - High word (upper 16 bits) of Current/Desired Frequency (0.1 kHz jumps) 
-    uint16_t frequency_lo;          // 40003 - Holding Register 3 - Low word (lower 16 bits) of current/desired frecunecy
-    uint16_t voltage_level;         // 40004 - Holding Register 4 - voltage level (%)
-    uint16_t on_time_ms;            // 40005 - Holding Register 5 - on_time_ms
-    uint16_t off_time_ms;           // 40006 - Holding Register 6 - off_time_ms
+    uint16_t frequency_hi;              // 40002 - Holding Register 2 - High word (upper 16 bits) of Current/Desired Frequency (0.1 kHz jumps) 
+    uint16_t frequency_lo;              // 40003 - Holding Register 3 - Low word (lower 16 bits) of current/desired frecunecy
+    uint16_t voltage_level;             // 40004 - Holding Register 4 - voltage level (%)
+    uint16_t on_time_ms;                // 40005 - Holding Register 5 - on_time_ms
+    uint16_t off_time_ms;               // 40006 - Holding Register 6 - off_time_ms
+    uint16_t voltage_adecuator_gain;    // 40007 - Holding Register 7 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
+    uint16_t current_adecuator_gain;    // 40008 - Holding Register 8 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
 }holding_register;
 
 // ---------------------------------------------------------------------------------------------
@@ -94,13 +97,9 @@ typedef struct
     uint16_t sensor_type;               // 30000 - Input Register 0 - Code for phase/resonance/power sensor
     uint16_t serial_number;             // 30001 - Input Register 1 - Sensor´s serial number
        
-    uint16_t power_output;              // 30002 - Input Register 2 - Measured Output Power [W])
-    uint16_t phase_difference;          // 30003 - Input Register 3 - Phase between V and I
-    uint16_t voltage_rms;               // 30004 - Input Register 4 - RMS Voltage
-    uint16_t current_rms;               // 30005 - Input Register 5 - RMS Current
-    uint16_t resonance_freq_hi;         // 30006 - Input Register 6 - Obtained Resonance Frecuency (high part, big endian)
-    uint16_t resonance_freq_lo;         // 30007 - Input Register 7 - Obtained Resonance Frecuency (low part, big endian))
-    uint16_t resonance_status;          // 30008 - Input Register 8 - (1 = resonance, 0 = no)
+    uint16_t phase_difference;          // 30002 - Input Register 2 - Measured Phase between V and I in tmr1 ticks
+    uint16_t ADC_peak_voltage;          // 30003 - Input Register 3 - Peak Voltage in ADC steps
+    uint16_t ADC_peak_current;          // 30004 - Input Register 4 - Peak Current in ADC steps
     uint16_t system_status;             // 30009 - Input Register 9 - System Status
     uint16_t last_error;                // 30010 - Input Register 10 - Last Error
 }input_register;

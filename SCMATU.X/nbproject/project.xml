@@ -3,8 +3,8 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>SCMATU</name>
-            <creation-uuid>19d7b08b-9fb9-406b-a772-100c2db74834</creation-uuid>
+            <name>SCMATU-Firmware</name>
+            <creation-uuid>892b8ab8-a0fa-46b4-ab56-5d6dae4dbcc5</creation-uuid>
             <make-project-type>0</make-project-type>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>

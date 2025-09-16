@@ -124,15 +124,18 @@ nmbs_error handle_write_single_register(uint16_t address, const uint16_t* regist
 
 void set_holding_regs_to_default(holding_register* regs)
 {
-    regs->addr_slave     = RTU_SERVER_ADDRESS_DEFAULT;
-    regs->baudrate       = RTU_BAUDRATE_DEFAULT;
+    regs->addr_slave                = RTU_SERVER_ADDRESS_DEFAULT;
+    regs->baudrate                  = RTU_BAUDRATE_DEFAULT;
 
-    regs->frequency_hi   = DEFAULT_FRECUENCY_HIGH;
-    regs->frequency_lo   = DEFAULT_FRECUENCY_LOW;
+    regs->frequency_hi              = DEFAULT_FRECUENCY_HIGH;
+    regs->frequency_lo              = DEFAULT_FRECUENCY_LOW;
 
-    regs->voltage_level  = DEFAULT_VOLTAGE_LEVEL;
-    regs->on_time_ms     = DEFAULT_ON_TIME_MS;
-    regs->off_time_ms    = DEFAULT_OFF_TIME_MS;
+    regs->voltage_level             = DEFAULT_VOLTAGE_LEVEL;
+    regs->on_time_ms                = DEFAULT_ON_TIME_MS;
+    regs->off_time_ms               = DEFAULT_OFF_TIME_MS;
+    
+    regs->voltage_adecuator_gain    = DEFAULT_VOLT_AD_GAIN;
+    regs->current_adecuator_gain    = DEFAULT_CURR_AD_GAIN;
 }
 
 void default_values_register(mod_bus_registers* registers)
@@ -141,23 +144,21 @@ void default_values_register(mod_bus_registers* registers)
     m_memset(&(registers->server_input_register),   0 ,sizeof(registers->server_input_register));
     m_memset(&(registers->server_holding_register), 0 ,sizeof(registers->server_holding_register));
         
-    registers->server_holding_register.frequency_hi     = DEFAULT_FRECUENCY_HIGH;
-    registers->server_holding_register.frequency_lo     = DEFAULT_FRECUENCY_LOW;
-    registers->server_holding_register.voltage_level    = DEFAULT_VOLTAGE_LEVEL;
-    registers->server_holding_register.on_time_ms       = DEFAULT_ON_TIME_MS;
-    registers->server_holding_register.off_time_ms      = DEFAULT_OFF_TIME_MS;
+    registers->server_holding_register.frequency_hi             = DEFAULT_FRECUENCY_HIGH;
+    registers->server_holding_register.frequency_lo             = DEFAULT_FRECUENCY_LOW;
+    registers->server_holding_register.voltage_level            = DEFAULT_VOLTAGE_LEVEL;
+    registers->server_holding_register.on_time_ms               = DEFAULT_ON_TIME_MS;
+    registers->server_holding_register.off_time_ms              = DEFAULT_OFF_TIME_MS;
+    registers->server_holding_register.voltage_adecuator_gain   = DEFAULT_VOLT_AD_GAIN;
+    registers->server_holding_register.current_adecuator_gain   = DEFAULT_CURR_AD_GAIN;
     
-    registers->server_input_register.serial_number      = RTU_SERIAL_NUMBER_DEFAULT;
-    registers->server_input_register.sensor_type        = RTU_SENSOR_TYPE_DEFAULT;
-    registers->server_input_register.power_output       = 0;
-    registers->server_input_register.phase_difference   = 0;
-    registers->server_input_register.voltage_rms        = 0;
-    registers->server_input_register.current_rms        = 0;
-    registers->server_input_register.resonance_freq_hi  = 0;
-    registers->server_input_register.resonance_freq_lo  = 0;
-    registers->server_input_register.resonance_status   = 0;
-    registers->server_input_register.system_status      = 0;
-    registers->server_input_register.last_error         = 0;
+    registers->server_input_register.serial_number              = RTU_SERIAL_NUMBER_DEFAULT;
+    registers->server_input_register.sensor_type                = RTU_SENSOR_TYPE_DEFAULT;
+    registers->server_input_register.phase_difference           = 0;
+    registers->server_input_register.ADC_peak_voltage           = 0;
+    registers->server_input_register.ADC_peak_current           = 0;
+    registers->server_input_register.system_status              = 0;
+    registers->server_input_register.last_error                 = 0;
     
     // Slave Number and Baudrate could have been stored in the Nov Volatile Memory
     // The first time the NVM is written we write NVM_CONFIG_MAGIC in the first address to indicate that the NVM contains usable data.

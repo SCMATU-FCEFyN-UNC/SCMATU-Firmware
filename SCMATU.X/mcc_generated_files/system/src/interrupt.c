@@ -69,6 +69,14 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         {
             CCP1_CaptureISR();
         } 
+        else if(PIE1bits.ADIE == 1 && PIR1bits.ADIF == 1)
+        {
+            ADC_ISR();
+        } 
+        else if(PIE1bits.ADTIE == 1 && PIR1bits.ADTIF == 1)
+        {
+            ADC_ThresholdISR();
+        } 
         else
         {
             //Unhandled Interrupt
