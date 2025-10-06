@@ -70,13 +70,6 @@ int main(void)
     CCP2_SetCallBack(&CCP2_Interrupt_Handler);
     // ------------------------------- /CCP Initialization ------------------------------
     
-    // ----------------------------- AD9833 Initialization ------------------------------
-    AD9833Reset();
-    AD9833SetRegisterValue(AD9833_OUT_SINUS);
-    AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
-    AD9833SetRegisterValue(AD9833_REG_CMD); // Clears RESET, enabling output
-    // ----------------------------- /AD9833 Initialization -----------------------------
-    
     __delay_ms(50); // This delay is required for modbus to work
     
     // --------------------------------------------- Modbus Initialization ------------------------------------------------------
@@ -114,8 +107,16 @@ int main(void)
     // --------------------------------------------- /Modbus Initialization -----------------------------------------------------
  
     // Load default frequency into the correct modbus registers so it can be read externally.
-    modbus_data.server_holding_register.frequency_hi = (desired_frequency >> 16) & 0xFFFF;
-    modbus_data.server_holding_register.frequency_lo = desired_frequency & 0xFFFF;
+    //modbus_data.server_holding_register.frequency_hi = (desired_frequency >> 16) & 0xFFFF;
+    //modbus_data.server_holding_register.frequency_lo = desired_frequency & 0xFFFF;
+    
+    // ----------------------------- AD9833 Initialization ------------------------------
+    desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
+    AD9833Reset();
+    AD9833SetRegisterValue(AD9833_OUT_SINUS);
+    AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
+    AD9833SetRegisterValue(AD9833_REG_CMD); // Clears RESET, enabling output
+    // ----------------------------- /AD9833 Initialization -----------------------------
     
     ADC_Enable();
     
@@ -158,6 +159,28 @@ int main(void)
                 // clear coil bit so it can be triggered again later
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
             }
+            if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
+                nmbs_bitfield_read(modbus_data.server_coils.coils, 3))
+            {            
+                // clear CCP flags
+                PIR6bits.CCP1IF = 0;
+                PIR6bits.CCP2IF = 0;
+                
+                // enable CCP1 in order to start measurement
+                CCP1CONbits.EN = 1 ;  
+                PIE6bits.CCP1IE = 1;
+                PIE6bits.CCP2IE = 0;
+                // clear coil bit so it can be triggered again later
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
+            }
+            
+            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) // Apply changes in frequency
+            {
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 4, 0);
+                desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
+                AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
+            }
+            
         } 
         
         if(measurement_ready)

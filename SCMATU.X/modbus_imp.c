@@ -134,8 +134,18 @@ void set_holding_regs_to_default(holding_register* regs)
     regs->on_time_ms                = DEFAULT_ON_TIME_MS;
     regs->off_time_ms               = DEFAULT_OFF_TIME_MS;
     
+    regs->freq_mode                 = DEFAULT_FREQ_MODE;
+    
+    regs->samples_amount            = DEFAULT_SAMPLES_AMOUNT;
+    regs->freq_step                 = DEFAULT_FREQ_STEP;
+    
     regs->voltage_adecuator_gain    = DEFAULT_VOLT_AD_GAIN;
     regs->current_adecuator_gain    = DEFAULT_CURR_AD_GAIN;
+    regs->shunt_res                 = DEFAULT_SHUNT_RES;
+    
+    regs->serial_number_in          = 0;
+    regs->sn_password               = 0;
+    regs->sn_write_status           = SNW_STATUS_IDLE;
 }
 
 void default_values_register(mod_bus_registers* registers)
@@ -146,11 +156,23 @@ void default_values_register(mod_bus_registers* registers)
         
     registers->server_holding_register.frequency_hi             = DEFAULT_FRECUENCY_HIGH;
     registers->server_holding_register.frequency_lo             = DEFAULT_FRECUENCY_LOW;
+    
     registers->server_holding_register.voltage_level            = DEFAULT_VOLTAGE_LEVEL;
     registers->server_holding_register.on_time_ms               = DEFAULT_ON_TIME_MS;
     registers->server_holding_register.off_time_ms              = DEFAULT_OFF_TIME_MS;
+    
+    registers->server_holding_register.freq_mode                = DEFAULT_FREQ_MODE;
+    
+    registers->server_holding_register.samples_amount           = DEFAULT_SAMPLES_AMOUNT;
+    registers->server_holding_register.freq_step                = DEFAULT_FREQ_STEP;
+    
     registers->server_holding_register.voltage_adecuator_gain   = DEFAULT_VOLT_AD_GAIN;
     registers->server_holding_register.current_adecuator_gain   = DEFAULT_CURR_AD_GAIN;
+    registers->server_holding_register.shunt_res                = DEFAULT_SHUNT_RES;
+    
+    registers->server_holding_register.serial_number_in             = 0;
+    registers->server_holding_register.sn_password                  = 0;
+    registers->server_holding_register.sn_write_status              = SNW_STATUS_IDLE;
     
     registers->server_input_register.serial_number              = RTU_SERIAL_NUMBER_DEFAULT;
     registers->server_input_register.sensor_type                = RTU_SENSOR_TYPE_DEFAULT;
@@ -177,16 +199,59 @@ void default_values_register(mod_bus_registers* registers)
         EEPROM_WriteWord(EEPROM_BAUDRATE_ADDR, RTU_BAUDRATE_DEFAULT);
         EEPROM_WriteWord(SENSOR_TYPE_ADDR, RTU_SENSOR_TYPE_DEFAULT);
         EEPROM_WriteWord(SERIAL_NUMBER_ADDR, RTU_SERIAL_NUMBER_DEFAULT);
+        
+        EEPROM_WriteWord(EEPROM_FREQ_HI_ADDR, DEFAULT_FRECUENCY_HIGH);
+        EEPROM_WriteWord(EEPROM_FREQ_LO_ADDR, DEFAULT_FRECUENCY_LOW);
+        
+        
+        
+        EEPROM_WriteWord(EEPROM_VOLT_LVL_ADDR, DEFAULT_VOLTAGE_LEVEL);
+        
+        EEPROM_WriteWord(EEPROM_ON_TIME_MS_ADDR, DEFAULT_ON_TIME_MS);
+        EEPROM_WriteWord(EEPROM_OFF_TIME_MS_ADDR, DEFAULT_OFF_TIME_MS);
+        
+        EEPROM_WriteWord(EEPROM_FREQ_MODE_ADDR, DEFAULT_FREQ_MODE);
+        
+        EEPROM_WriteWord(EEPROM_SAMPLES_AMOUNT_ADDR, DEFAULT_SAMPLES_AMOUNT);
+        EEPROM_WriteWord(EEPROM_FREQ_STEP_ADDR, DEFAULT_FREQ_STEP);
+        
+        EEPROM_WriteWord(EEPROM_VOLT_AD_GAIN_ADDR, DEFAULT_FREQ_STEP);
+        EEPROM_WriteWord(EEPROM_CURR_AD_GAIN_ADDR, DEFAULT_FREQ_STEP);
+        EEPROM_WriteWord(EEPROM_SHUNT_RES_ADDR, DEFAULT_FREQ_STEP);
+        
+        EEPROM_WriteWord(EEPROM_RES_FREQ_HI_ADDR, DEFAULT_FRECUENCY_HIGH);
+        EEPROM_WriteWord(EEPROM_RES_FREQ_LO_ADDR, DEFAULT_FRECUENCY_LOW);    
     }
     else
     {
         // Load values from EEPROM NVM
-        registers->server_holding_register.addr_slave     = EEPROM_ReadWord(EEPROM_ADDR_SLAVE_ADDR);
-        registers->server_holding_register.baudrate       = EEPROM_ReadWord(EEPROM_BAUDRATE_ADDR);
+        registers->server_holding_register.addr_slave                   = EEPROM_ReadWord(EEPROM_ADDR_SLAVE_ADDR);
+        registers->server_holding_register.baudrate                     = EEPROM_ReadWord(EEPROM_BAUDRATE_ADDR);
+        
         EUSART1_SetBaudRate(registers->server_holding_register.baudrate);
-        registers->server_input_register.sensor_type      = EEPROM_ReadWord(SENSOR_TYPE_ADDR);
-        registers->server_input_register.serial_number    = EEPROM_ReadWord(SERIAL_NUMBER_ADDR);
-        registers->server_input_register.sensor_type      = 999;
+        
+        registers->server_input_register.sensor_type                    = EEPROM_ReadWord(SENSOR_TYPE_ADDR);
+        registers->server_input_register.serial_number                  = EEPROM_ReadWord(SERIAL_NUMBER_ADDR);
+        registers->server_input_register.sensor_type                    = 999;
+        
+        registers->server_holding_register.frequency_hi                 = EEPROM_ReadWord(EEPROM_FREQ_HI_ADDR);
+        registers->server_holding_register.frequency_lo                 = EEPROM_ReadWord(EEPROM_FREQ_LO_ADDR);
+        registers->server_holding_register.voltage_level                = EEPROM_ReadWord(EEPROM_VOLT_LVL_ADDR);
+        
+        registers->server_holding_register.on_time_ms                   = EEPROM_ReadWord(EEPROM_ON_TIME_MS_ADDR);
+        registers->server_holding_register.off_time_ms                  = EEPROM_ReadWord(EEPROM_OFF_TIME_MS_ADDR);
+        
+        registers->server_holding_register.freq_mode                    = EEPROM_ReadWord(EEPROM_FREQ_MODE_ADDR);
+        
+        registers->server_holding_register.samples_amount               = EEPROM_ReadWord(EEPROM_SAMPLES_AMOUNT_ADDR);
+        registers->server_holding_register.freq_step                    = EEPROM_ReadWord(EEPROM_FREQ_STEP_ADDR);
+        
+        registers->server_holding_register.voltage_adecuator_gain       = EEPROM_ReadWord(EEPROM_VOLT_AD_GAIN_ADDR);
+        registers->server_holding_register.current_adecuator_gain       = EEPROM_ReadWord(EEPROM_CURR_AD_GAIN_ADDR);
+        registers->server_holding_register.shunt_res                    = EEPROM_ReadWord(EEPROM_SHUNT_RES_ADDR);
+        
+        registers->server_input_register.res_freq_hi                    = EEPROM_ReadWord(EEPROM_RES_FREQ_HI_ADDR);
+        registers->server_input_register.res_freq_lo                    = EEPROM_ReadWord(EEPROM_RES_FREQ_LO_ADDR);  
     }
 }
 
@@ -215,39 +280,82 @@ void holding_register_change_handler(mod_bus_registers* modbus_data,holding_regi
     }
     
     // Check for changes in fecuency registers
-    uint16_t new_frecuency_hi = modbus_data->server_holding_register.frequency_hi;
-    uint16_t new_frecuency_lo = modbus_data->server_holding_register.frequency_lo;
-    
-    extern uint32_t desired_frequency;
-    uint32_t previous_frequency = 0;
-    
-    previous_frequency = desired_frequency;
-    
-    desired_frequency = ((uint32_t)new_frecuency_hi << 16) | new_frecuency_lo;
-    
-    if(desired_frequency != previous_frequency)
+    if(modbus_data->server_holding_register.frequency_hi != prev_holding_regs->frequency_hi)
     {
-        AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
+        prev_holding_regs->frequency_hi = modbus_data->server_holding_register.frequency_hi;
+
+        //modbus_data->server_input_register.res_freq_hi = new_frecuency_hi;
+        EEPROM_WriteWord(EEPROM_FREQ_HI_ADDR, modbus_data->server_holding_register.frequency_hi); 
     }
-    
+    if(modbus_data->server_holding_register.frequency_lo != prev_holding_regs->frequency_lo)
+    {
+        prev_holding_regs->frequency_lo = modbus_data->server_holding_register.frequency_lo;
+        //modbus_data->server_input_register.res_freq_lo = new_frecuency_lo;
+        EEPROM_WriteWord(EEPROM_FREQ_LO_ADDR, modbus_data->server_holding_register.frequency_lo);  
+    }   
     
     // Check for changes in voltage level
     if(modbus_data->server_holding_register.voltage_level != prev_holding_regs->voltage_level)
     {
         prev_holding_regs->voltage_level = modbus_data->server_holding_register.voltage_level;
+        EEPROM_WriteWord(EEPROM_VOLT_LVL_ADDR, modbus_data->server_holding_register.voltage_level);
     }
     
     // Check for changes in ON time
     if(modbus_data->server_holding_register.on_time_ms != prev_holding_regs->on_time_ms)
     {
         prev_holding_regs->on_time_ms = modbus_data->server_holding_register.on_time_ms;
+        EEPROM_WriteWord(EEPROM_ON_TIME_MS_ADDR, modbus_data->server_holding_register.on_time_ms);
     }
     
     // Check for changes in OFF time
     if(modbus_data->server_holding_register.off_time_ms != prev_holding_regs->off_time_ms)
     {
         prev_holding_regs->off_time_ms = modbus_data->server_holding_register.off_time_ms;
+        EEPROM_WriteWord(EEPROM_OFF_TIME_MS_ADDR, modbus_data->server_holding_register.off_time_ms);
     }
+    
+    // Check for changes in Freq Mode
+    if(modbus_data->server_holding_register.freq_mode != prev_holding_regs->freq_mode)
+    {
+        prev_holding_regs->freq_mode = modbus_data->server_holding_register.freq_mode;
+        EEPROM_WriteWord(EEPROM_FREQ_MODE_ADDR, DEFAULT_FREQ_MODE);
+    }
+    
+    // Check for changes in Samples ammount
+    if(modbus_data->server_holding_register.samples_amount != prev_holding_regs->samples_amount)
+    {
+        prev_holding_regs->samples_amount = modbus_data->server_holding_register.samples_amount;
+        EEPROM_WriteWord(EEPROM_SAMPLES_AMOUNT_ADDR, modbus_data->server_holding_register.samples_amount);
+    }
+    
+    // Check for changes in frequency step
+    if(modbus_data->server_holding_register.freq_step != prev_holding_regs->freq_step)
+    {
+        prev_holding_regs->freq_step = modbus_data->server_holding_register.freq_step;
+        EEPROM_WriteWord(EEPROM_FREQ_STEP_ADDR, modbus_data->server_holding_register.freq_step);
+    }
+    
+    // Check for changes in voltage_adecuator_gain
+    if(modbus_data->server_holding_register.voltage_adecuator_gain != prev_holding_regs->voltage_adecuator_gain)
+    {
+        prev_holding_regs->voltage_adecuator_gain = modbus_data->server_holding_register.voltage_adecuator_gain;
+        EEPROM_WriteWord(EEPROM_VOLT_AD_GAIN_ADDR, modbus_data->server_holding_register.voltage_adecuator_gain);
+    }
+    
+    // Check for changes in current_adecuator_gain
+    if(modbus_data->server_holding_register.current_adecuator_gain != prev_holding_regs->current_adecuator_gain)
+    {
+        prev_holding_regs->current_adecuator_gain = modbus_data->server_holding_register.current_adecuator_gain;
+        EEPROM_WriteWord(EEPROM_CURR_AD_GAIN_ADDR, modbus_data->server_holding_register.current_adecuator_gain);
+    }
+    
+    // Check for changes in shunt resistor value
+    if(modbus_data->server_holding_register.shunt_res != prev_holding_regs->shunt_res)
+    {
+        prev_holding_regs->shunt_res = modbus_data->server_holding_register.shunt_res;
+        EEPROM_WriteWord(EEPROM_SHUNT_RES_ADDR, modbus_data->server_holding_register.shunt_res);
+    }    
 }
 
 void single_16_bit_nvm_write(uint16_t value)

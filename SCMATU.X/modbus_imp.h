@@ -32,9 +32,9 @@ extern "C" {
  */
     
 // ------------------- Modbus Limits -------------------
-#define COILS_ADDR_MAX          4
-#define REGS_INPUT_ADDR_MAX     8
-#define REGS_HOLDING_ADDR_MAX   9
+#define COILS_ADDR_MAX          6
+#define REGS_INPUT_ADDR_MAX     10
+#define REGS_HOLDING_ADDR_MAX   18
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
 
@@ -45,8 +45,8 @@ extern "C" {
  * 1            | Measure All (Phase and Power)
  * 2            | Measure Power
  * 3            | Measure Phase
- * 4            | Save current settings
- * 5            | Reserved
+ * 4            | Update output frequency
+ * 5            | Enable closed loop control
  */
 typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 {
@@ -58,14 +58,33 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 // Default Values
 #define RTU_SERVER_ADDRESS_DEFAULT  20      // Our RTU address (Slave number 20) - Slaves can be 0 to 255
 #define RTU_BAUDRATE_DEFAULT        9600
+
 #define DEFAULT_FRECUENCY           140000
 #define DEFAULT_FRECUENCY_HIGH      2
 #define DEFAULT_FRECUENCY_LOW       8928
 #define DEFAULT_VOLTAGE_LEVEL       100
+
 #define DEFAULT_ON_TIME_MS          500
 #define DEFAULT_OFF_TIME_MS         500
+
+#define DEFAULT_FREQ_MODE           0
+
+#define DEFAULT_SAMPLES_AMOUNT      20
+#define DEFAULT_FREQ_STEP           10
+
 #define DEFAULT_VOLT_AD_GAIN        4188    // Vout = Vin*0.4188 
 #define DEFAULT_CURR_AD_GAIN        39493   // Vout = Vin*39.493
+#define DEFAULT_SHUNT_RES           1010    // I = (((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000)) / (shunt_res/100)
+
+// Holding registers for serial number write operations     
+#define SN_PASSWORD_CORRECT         8336    // This value must be written into holding register 19 in order to enable a serial number write.
+#define SN_WRITE_TIMEOUT            15      // Duration (in seconds) for which the serial number write operation remains enabled after correct password entry
+                                            // Keep in mind, this will control a counter inside the TMR0 interrupt so if the interrupt period changes, so will this duration
+#define SNW_STATUS_IDLE             0 
+#define SNW_STATUS_SUCCESS          1 
+#define SNW_STATUS_WRONG_PASS       2 
+#define SNW_STATUS_NOT_AUTHORIZED   3 
+// -----------------------------------------------------------------------------------------------------------------------
 
 typedef struct
 {
@@ -77,8 +96,22 @@ typedef struct
     uint16_t voltage_level;             // 40004 - Holding Register 4 - voltage level (%)
     uint16_t on_time_ms;                // 40005 - Holding Register 5 - on_time_ms
     uint16_t off_time_ms;               // 40006 - Holding Register 6 - off_time_ms
-    uint16_t voltage_adecuator_gain;    // 40007 - Holding Register 7 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
-    uint16_t current_adecuator_gain;    // 40008 - Holding Register 8 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
+    
+    uint16_t freq_mode;                 // 40007 - Holding Register 7 - Set frecuency mode: 0- Set by user | 1- Lock to resonance frequency (closed loop control)
+    
+    uint16_t samples_amount;            // 40008 - Holding Register 8 - Amount of samples taken per phase measurement
+    uint16_t freq_step;                 // 40009 - Holding Register 9 - Frequency step for resonance frequency auto-detection (example 0.1 kHz jumps) [Hz/100]
+    uint16_t freq_range_start;          // 40010 - Holding Register 10 - Start of the frequency range to be tested when auto-detecting resonance frequency
+    uint16_t freq_range_end;            // 40011 - Holding Register 11 - End of the frequency range to be tested when auto-detecting resonance frequency
+    
+    uint16_t voltage_adecuator_gain;    // 40012 - Holding Register 12 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
+    uint16_t current_adecuator_gain;    // 40013 - Holding Register 13 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
+    uint16_t shunt_res;                 // 40014 - Holding Register 14 - Shunt resistor for current determination (I = V / R) [Ohm*100]
+    
+    uint16_t serial_number_in;          // 40015 - Holding Register 15 - Use this register to write the serial number (first input the password)
+    uint16_t sn_password;               // 40016 - Holding Register 16 - Writing the correct value into this register enables 1 serial number write for 15 seconds
+    uint16_t sn_write_status;           // 40017 - Holding Register 17 - Status for the last serial number write attempt 
+                                        // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
 }holding_register;
 
 // ---------------------------------------------------------------------------------------------
@@ -100,8 +133,13 @@ typedef struct
     uint16_t phase_difference;          // 30002 - Input Register 2 - Measured Phase between V and I in tmr1 ticks
     uint16_t ADC_peak_voltage;          // 30003 - Input Register 3 - Peak Voltage in ADC steps
     uint16_t ADC_peak_current;          // 30004 - Input Register 4 - Peak Current in ADC steps
-    uint16_t system_status;             // 30009 - Input Register 9 - System Status
-    uint16_t last_error;                // 30010 - Input Register 10 - Last Error
+    
+    uint16_t res_freq_hi;               // 30005 - Input Register 5 - High word (upper 16 bits) of obtained resonance frequency 
+    uint16_t res_freq_lo;               // 30006 - Input Register 6 - Low word (lower 16 bits) of obtained resonance frecunecy
+    uint16_t res_freq_status;           // 30007 - Input Register 7 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain
+    
+    uint16_t system_status;             // 30008 - Input Register 8 - System Status
+    uint16_t last_error;                // 30009 - Input Register 9 - Last Error
 }input_register;
 // ---------------------------------------------------------------------------------------------
 

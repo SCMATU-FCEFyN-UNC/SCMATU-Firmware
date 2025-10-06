@@ -17,6 +17,25 @@
 #define SENSOR_TYPE_ADDR            (EEPROM_START_ADDRESS + 5)      // Input Register 0
 #define SERIAL_NUMBER_ADDR          (EEPROM_START_ADDRESS + 7)      // Input Register 1
 
+#define EEPROM_FREQ_HI_ADDR         (EEPROM_START_ADDRESS + 9)      // Holding Register 2
+#define EEPROM_FREQ_LO_ADDR         (EEPROM_START_ADDRESS + 11)     // Holding Register 3
+#define EEPROM_VOLT_LVL_ADDR        (EEPROM_START_ADDRESS + 13)     // Holding Register 4
+
+#define EEPROM_ON_TIME_MS_ADDR      (EEPROM_START_ADDRESS + 15)     // Holding Register 5
+#define EEPROM_OFF_TIME_MS_ADDR     (EEPROM_START_ADDRESS + 17)     // Holding Register 5
+
+#define EEPROM_FREQ_MODE_ADDR       (EEPROM_START_ADDRESS + 19)     // Holding Register 6
+
+#define EEPROM_SAMPLES_AMOUNT_ADDR   (EEPROM_START_ADDRESS + 21)     // Holding Register 7
+#define EEPROM_FREQ_STEP_ADDR       (EEPROM_START_ADDRESS + 23)     // Holding Register 8
+
+#define EEPROM_VOLT_AD_GAIN_ADDR    (EEPROM_START_ADDRESS + 25)     // Holding Register 9
+#define EEPROM_CURR_AD_GAIN_ADDR    (EEPROM_START_ADDRESS + 27)     // Holding Register 10
+#define EEPROM_SHUNT_RES_ADDR       (EEPROM_START_ADDRESS + 29)     // Holding Register 11
+
+#define EEPROM_RES_FREQ_HI_ADDR     (EEPROM_START_ADDRESS + 31)     // Input Register 5
+#define EEPROM_RES_FREQ_LO_ADDR     (EEPROM_START_ADDRESS + 33)     // Input Register 6
+
 // Function prototype
 uint16_t EEPROM_ReadWord(uint16_t address);
 bool EEPROM_WriteWord(uint16_t address, uint16_t value);
