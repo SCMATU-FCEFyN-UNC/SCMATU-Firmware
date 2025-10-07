@@ -46,7 +46,8 @@ extern "C" {
  * 2            | Measure Power
  * 3            | Measure Phase
  * 4            | Update output frequency
- * 5            | Enable closed loop control
+ * 5            | Auto-determine resonance frequency
+ * 6            | Enable closed loop control
  */
 typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 {

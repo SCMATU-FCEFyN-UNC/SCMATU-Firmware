@@ -10,6 +10,7 @@
 
 // Actuator Control Variables
 uint32_t desired_frequency = 140000;
+uint32_t resonance_frequency = 131000;
 
 // Modbus Variables
 mod_bus_registers modbus_data;      // Coils, Holding Registers, Input Registers
@@ -144,6 +145,8 @@ int main(void)
                 // Store measurement
                 modbus_data.server_input_register.ADC_peak_voltage = ADC_peak_voltage;
                 modbus_data.server_input_register.ADC_peak_current = ADC_peak_current;
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 2, 0);
             }
             if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
                 nmbs_bitfield_read(modbus_data.server_coils.coils, 3))
@@ -157,30 +160,26 @@ int main(void)
                 PIE6bits.CCP1IE = 1;
                 PIE6bits.CCP2IE = 0;
                 // clear coil bit so it can be triggered again later
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
             }
-            if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
-                nmbs_bitfield_read(modbus_data.server_coils.coils, 3))
-            {            
-                // clear CCP flags
-                PIR6bits.CCP1IF = 0;
-                PIR6bits.CCP2IF = 0;
-                
-                // enable CCP1 in order to start measurement
-                CCP1CONbits.EN = 1 ;  
-                PIE6bits.CCP1IE = 1;
-                PIE6bits.CCP2IE = 0;
-                // clear coil bit so it can be triggered again later
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
-            }
-            
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) // Apply changes in frequency
             {
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 4, 0);
                 desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
                 AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
             }
-            
+            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 5)) // Auto-determine resonance frequency (dummy)
+            {
+                resonance_frequency = 131000;
+                
+                modbus_data.server_input_register.res_freq_hi = (uint16_t)(resonance_frequency >> 16);
+                modbus_data.server_input_register.res_freq_lo = (uint16_t)(resonance_frequency & 0xFFFF);
+                modbus_data.server_input_register.res_freq_status = 1;
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 5, 0);
+            }
         } 
         
         if(measurement_ready)
