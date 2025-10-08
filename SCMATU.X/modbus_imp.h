@@ -33,7 +33,7 @@ extern "C" {
     
 // ------------------- Modbus Limits -------------------
 #define COILS_ADDR_MAX          6
-#define REGS_INPUT_ADDR_MAX     10
+#define REGS_INPUT_ADDR_MAX     11
 #define REGS_HOLDING_ADDR_MAX   18
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
@@ -132,15 +132,16 @@ typedef struct
     uint16_t serial_number;             // 30001 - Input Register 1 - Sensor´s serial number
        
     uint16_t phase_difference;          // 30002 - Input Register 2 - Measured Phase between V and I in tmr1 ticks
-    uint16_t ADC_peak_voltage;          // 30003 - Input Register 3 - Peak Voltage in ADC steps
-    uint16_t ADC_peak_current;          // 30004 - Input Register 4 - Peak Current in ADC steps
+    uint16_t phase_ready;               // 30003 - Input Register 3 - 0 - Phase measurement is still in progress | 1 - phase measurement ready
+    uint16_t ADC_peak_voltage;          // 30004 - Input Register 4 - Peak Voltage in ADC steps
+    uint16_t ADC_peak_current;          // 30005 - Input Register 5 - Peak Current in ADC steps
     
-    uint16_t res_freq_hi;               // 30005 - Input Register 5 - High word (upper 16 bits) of obtained resonance frequency 
-    uint16_t res_freq_lo;               // 30006 - Input Register 6 - Low word (lower 16 bits) of obtained resonance frecunecy
-    uint16_t res_freq_status;           // 30007 - Input Register 7 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain
+    uint16_t res_freq_hi;               // 30006 - Input Register 6 - High word (upper 16 bits) of obtained resonance frequency 
+    uint16_t res_freq_lo;               // 30007 - Input Register 7 - Low word (lower 16 bits) of obtained resonance frecunecy
+    uint16_t res_freq_status;           // 30008 - Input Register 8 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain
     
-    uint16_t system_status;             // 30008 - Input Register 8 - System Status
-    uint16_t last_error;                // 30009 - Input Register 9 - Last Error
+    uint16_t system_status;             // 30009 - Input Register 9 - System Status
+    uint16_t last_error;                // 30010 - Input Register 10 - Last Error
 }input_register;
 // ---------------------------------------------------------------------------------------------
 

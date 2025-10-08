@@ -177,6 +177,7 @@ void default_values_register(mod_bus_registers* registers)
     registers->server_input_register.serial_number              = RTU_SERIAL_NUMBER_DEFAULT;
     registers->server_input_register.sensor_type                = RTU_SENSOR_TYPE_DEFAULT;
     registers->server_input_register.phase_difference           = 0;
+    registers->server_input_register.phase_ready                = 0; 
     registers->server_input_register.ADC_peak_voltage           = 0;
     registers->server_input_register.ADC_peak_current           = 0;
     registers->server_input_register.system_status              = 0;
@@ -283,14 +284,11 @@ void holding_register_change_handler(mod_bus_registers* modbus_data,holding_regi
     if(modbus_data->server_holding_register.frequency_hi != prev_holding_regs->frequency_hi)
     {
         prev_holding_regs->frequency_hi = modbus_data->server_holding_register.frequency_hi;
-
-        //modbus_data->server_input_register.res_freq_hi = new_frecuency_hi;
         EEPROM_WriteWord(EEPROM_FREQ_HI_ADDR, modbus_data->server_holding_register.frequency_hi); 
     }
     if(modbus_data->server_holding_register.frequency_lo != prev_holding_regs->frequency_lo)
     {
         prev_holding_regs->frequency_lo = modbus_data->server_holding_register.frequency_lo;
-        //modbus_data->server_input_register.res_freq_lo = new_frecuency_lo;
         EEPROM_WriteWord(EEPROM_FREQ_LO_ADDR, modbus_data->server_holding_register.frequency_lo);  
     }   
     

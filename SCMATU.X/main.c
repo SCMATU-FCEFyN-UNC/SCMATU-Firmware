@@ -7,6 +7,7 @@
 #include "nanomodbus.h" // Library to control AD9833 signal generator
 #include "modbus_imp.h" // Library to control AD9833 signal generator
 #include "nvm_config.h" // Library to control AD9833 signal generator
+#include "robust_measurement.h" // Robust measurement library
 
 // Actuator Control Variables
 uint32_t desired_frequency = 140000;
@@ -25,6 +26,14 @@ uint16_t ccp2_value = 0;
 uint16_t phase_ticks;
 bool measurement_ready = false;
 
+// Robust_measurement values
+uint16_t raw_phase_samples[MAX_SAMPLES];
+uint16_t temp_samples[MAX_SAMPLES];
+uint16_t median;
+uint8_t requested_samples = 0;
+uint8_t sample_index = 0;
+bool sampling_active = false;
+
 // Interrupt Service Routines
 void CCP1_Interrupt_Handler(uint16_t value);
 void CCP2_Interrupt_Handler(uint16_t value);
@@ -36,6 +45,7 @@ adc_channel_t VRLCr_PEAK = ADC_CHANNEL_ANC5;
 adc_channel_t Vr_PEAK = ADC_CHANNEL_ANC4; 
 
 uint16_t get_ADC_measurement(adc_channel_t channel);
+void get_phase_samples();
 
 int main(void)
 {
@@ -106,10 +116,6 @@ int main(void)
         //while(1){}                  // Halt if unable to create modbus server 
     } 
     // --------------------------------------------- /Modbus Initialization -----------------------------------------------------
- 
-    // Load default frequency into the correct modbus registers so it can be read externally.
-    //modbus_data.server_holding_register.frequency_hi = (desired_frequency >> 16) & 0xFFFF;
-    //modbus_data.server_holding_register.frequency_lo = desired_frequency & 0xFFFF;
     
     // ----------------------------- AD9833 Initialization ------------------------------
     desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
@@ -148,9 +154,15 @@ int main(void)
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 2, 0);
             }
-            if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
+            if (!sampling_active && nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
                 nmbs_bitfield_read(modbus_data.server_coils.coils, 3))
             {            
+                // Prepare for sampling session
+                sample_index = 0;
+                sampling_active = true;
+                measurement_ready = false;
+                modbus_data.server_input_register.phase_ready = 0;  // not ready yet
+                
                 // clear CCP flags
                 PIR6bits.CCP1IF = 0;
                 PIR6bits.CCP2IF = 0;
@@ -159,9 +171,10 @@ int main(void)
                 CCP1CONbits.EN = 1 ;  
                 PIE6bits.CCP1IE = 1;
                 PIE6bits.CCP2IE = 0;
+                
                 // clear coil bit so it can be triggered again later
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
+                //nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);  
             }
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) // Apply changes in frequency
             {
@@ -182,15 +195,7 @@ int main(void)
             }
         } 
         
-        if(measurement_ready)
-        {
-            measurement_ready = false;                                          // Clear these flag to avoid re-execution
-            modbus_data.server_input_register.phase_difference = phase_ticks;   // Store result into corresponding modbus register
-            // Reset values before next measurement
-            phase_ticks = 0;
-            ccp1_value = 0;
-            ccp2_value = 0;
-        }
+        get_phase_samples();
     }    
 }
 
@@ -236,4 +241,52 @@ uint16_t get_ADC_measurement(adc_channel_t channel)
     ADC_result = ADC_ConversionResultGet();
     
     return (uint16_t)ADC_result;
+}
+
+void get_phase_samples()
+{
+    // --- 2. Handle when a measurement just finished (set by CCP2 ISR) ---
+    requested_samples = modbus_data.server_holding_register.samples_amount;
+        
+    if (sampling_active && measurement_ready)
+    {
+        measurement_ready = false;
+
+        // Store the measured value
+        raw_phase_samples[sample_index++] = phase_ticks;
+
+        // Reset intermediate variables
+        phase_ticks = 0;
+        ccp1_value = 0;
+        ccp2_value = 0;
+
+        if (sample_index < requested_samples)
+        {
+            // Start the next measurement
+            PIR6bits.CCP1IF = 0;
+            PIR6bits.CCP2IF = 0;
+            CCP1CONbits.EN = 1;
+            PIE6bits.CCP1IE = 1;
+            PIE6bits.CCP2IE = 0;
+        }
+        else
+        {
+            sampling_active = false;
+
+            // --- Compute median & robust average ---
+            uint16_t median = calculate_median(raw_phase_samples, temp_samples, requested_samples);
+            const uint16_t tolerance_ticks = 2;   // ?200 ns at 125 ns/tick
+            uint16_t robust_avg_ticks = robust_average(raw_phase_samples, median,
+                                                       requested_samples, tolerance_ticks);
+
+            // --- Convert to nanoseconds ---
+            float phase_ns = calculate_phase_ns(robust_avg_ticks,
+                                                (float)desired_frequency,
+                                                (float)TICKS_NS);
+
+            // --- Store results ---
+            modbus_data.server_input_register.phase_difference = (int16_t)phase_ns;
+            modbus_data.server_input_register.phase_ready = 1;   // ready for host
+        }
+    }
 }
