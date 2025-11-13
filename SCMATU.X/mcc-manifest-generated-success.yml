@@ -2,7 +2,7 @@
 
 manifest_file_version: 1.0.0
 project: SCMATU-Firmware
-creation_date: 2025-09-04T18:10:32.038-03:00[America/Buenos_Aires]
+creation_date: 2025-11-11T18:32:47.854-03:00[America/Buenos_Aires]
 operating_system: Windows 10
 mcc_mode: IDE
 mcc_mode_version: v6.20
@@ -15,7 +15,7 @@ is_mcc_offline: false
 is_using_prerelease_versions: false
 mcc_content_registries: https://registry.npmjs.org/
 device_library: {library_class: com.microchip.mcc.melody.Library, name: Melody, version: 2.9.2}
-packs: {name: PIC16F1xxxx_DFP, version: 1.27.418}
+packs: {name: PIC16F1xxxx_DFP, version: 1.28.431}
 modules:
 - {name: '@mchp-mcc/main-manager', type: MELODY, version: 3.1.2}
 - {name: '@mchp-mcc/pic-8bit', type: MELODY, version: 5.29.1}

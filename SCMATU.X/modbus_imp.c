@@ -139,6 +139,11 @@ void set_holding_regs_to_default(holding_register* regs)
     regs->samples_amount            = DEFAULT_SAMPLES_AMOUNT;
     regs->freq_step                 = DEFAULT_FREQ_STEP;
     
+    regs->freq_range_start_hi       = ((DEFAULT_FREQ_START >> 14) & 0x3FFF) | 0x4000;
+    regs->freq_range_start_lo       = ((DEFAULT_FREQ_START >> 14) & 0x3FFF) | 0x4000;
+    regs->freq_range_end_hi         = ((DEFAULT_FREQ_END >> 14) & 0x3FFF) | 0x4000;
+    regs->freq_range_end_lo         = ((DEFAULT_FREQ_END >> 14) & 0x3FFF) | 0x4000;
+    
     regs->voltage_adecuator_gain    = DEFAULT_VOLT_AD_GAIN;
     regs->current_adecuator_gain    = DEFAULT_CURR_AD_GAIN;
     regs->shunt_res                 = DEFAULT_SHUNT_RES;
@@ -165,6 +170,11 @@ void default_values_register(mod_bus_registers* registers)
     
     registers->server_holding_register.samples_amount           = DEFAULT_SAMPLES_AMOUNT;
     registers->server_holding_register.freq_step                = DEFAULT_FREQ_STEP;
+    
+    registers->server_holding_register.freq_range_start_hi      = ((DEFAULT_FREQ_START >> 14) & 0x3FFF) | 0x4000;
+    registers->server_holding_register.freq_range_start_lo      = ((DEFAULT_FREQ_START >> 14) & 0x3FFF) | 0x4000;
+    registers->server_holding_register.freq_range_end_hi        = ((DEFAULT_FREQ_END >> 14) & 0x3FFF) | 0x4000;
+    registers->server_holding_register.freq_range_end_lo        = ((DEFAULT_FREQ_END >> 14) & 0x3FFF) | 0x4000;
     
     registers->server_holding_register.voltage_adecuator_gain   = DEFAULT_VOLT_AD_GAIN;
     registers->server_holding_register.current_adecuator_gain   = DEFAULT_CURR_AD_GAIN;
@@ -333,6 +343,24 @@ void holding_register_change_handler(mod_bus_registers* modbus_data,holding_regi
         prev_holding_regs->freq_step = modbus_data->server_holding_register.freq_step;
         EEPROM_WriteWord(EEPROM_FREQ_STEP_ADDR, modbus_data->server_holding_register.freq_step);
     }
+    
+    // Check for changes in fecuency range registers (auto-resonance detection frequency range)
+    if(modbus_data->server_holding_register.freq_range_start_hi != prev_holding_regs->freq_range_start_hi)
+    {
+        prev_holding_regs->freq_range_start_hi = modbus_data->server_holding_register.freq_range_start_hi;
+    }
+    if(modbus_data->server_holding_register.freq_range_start_lo != prev_holding_regs->freq_range_start_lo)
+    {
+        prev_holding_regs->freq_range_start_lo = modbus_data->server_holding_register.freq_range_start_lo;
+    }
+    if(modbus_data->server_holding_register.freq_range_end_hi != prev_holding_regs->freq_range_end_hi)
+    {
+        prev_holding_regs->freq_range_end_hi = modbus_data->server_holding_register.freq_range_end_hi;
+    }
+    if(modbus_data->server_holding_register.freq_range_end_lo != prev_holding_regs->freq_range_end_lo)
+    {
+        prev_holding_regs->freq_range_end_lo = modbus_data->server_holding_register.freq_range_end_lo;
+    } 
     
     // Check for changes in voltage_adecuator_gain
     if(modbus_data->server_holding_register.voltage_adecuator_gain != prev_holding_regs->voltage_adecuator_gain)
