@@ -33,7 +33,7 @@ extern "C" {
     
 // ------------------- Modbus Limits -------------------
 #define COILS_ADDR_MAX          6
-#define REGS_INPUT_ADDR_MAX     23
+#define REGS_INPUT_ADDR_MAX     26
 #define REGS_HOLDING_ADDR_MAX   21
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
@@ -61,9 +61,8 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define RTU_BAUDRATE_DEFAULT        9600
 
 #define DEFAULT_FRECUENCY           60000
-
-#define DEFAULT_FRECUENCY_HIGH      2
-#define DEFAULT_FRECUENCY_LOW       8928
+#define DEFAULT_FRECUENCY_HIGH      0
+#define DEFAULT_FRECUENCY_LOW       60000
 //#define DEFAULT_FRECUENCY_HIGH      ((DEFAULT_FRECUENCY >> 14) & 0x3FFF) | 0x4000;
 //#define DEFAULT_FRECUENCY_LOW       (DEFAULT_FRECUENCY & 0x3FFF) | 0x4000;
     
@@ -75,13 +74,17 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_FREQ_MODE           0
 
 #define DEFAULT_SAMPLES_AMOUNT      20
-#define DEFAULT_FREQ_STEP           10
-#define DEFAULT_FREQ_START          120000  
-#define DEFAULT_FREQ_END            130000  
+#define DEFAULT_FREQ_STEP           100
+#define DEFAULT_FREQ_START          48000  
+#define DEFAULT_FREQ_END            51000  
+
+#define DEFAULT_BEST_FREQ_PHASE     32767
+#define DEFAULT_BEST_FREQ_CURR      0
 
 #define DEFAULT_VOLT_AD_GAIN        4188    // Vout = Vin*0.4188 
 #define DEFAULT_CURR_AD_GAIN        39493   // Vout = Vin*39.493
 #define DEFAULT_SHUNT_RES           1010    // I = (((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000)) / (shunt_res/100)
+#define MAX_ADC_SAMPLES             10      // Each ADC measurement is the average of max 10 ADC samples
 
 // Holding registers for serial number write operations     
 #define SN_PASSWORD_CORRECT         8336    // This value must be written into holding register 19 in order to enable a serial number write.
@@ -118,12 +121,13 @@ typedef struct
     uint16_t voltage_adecuator_gain;    // 40014 - Holding Register 14 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
     uint16_t current_adecuator_gain;    // 40015 - Holding Register 15 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
     uint16_t shunt_res;                 // 40016 - Holding Register 16 - Shunt resistor for current determination (I = V / R) [Ohm*100]
+    uint16_t adc_samples_amount;        // 40017 - Holding Register 17 - Ammount of samples to be averaged for ADC mreasurements.
     
-    uint16_t serial_number_in;          // 40017 - Holding Register 17 - Use this register to write the serial number (first input the password)
-    uint16_t sn_password;               // 40018 - Holding Register 18 - Writing the correct value into this register enables 1 serial number write for 15 seconds
-    uint16_t sn_write_status;           // 40019 - Holding Register 19 - Status for the last serial number write attempt 
+    uint16_t serial_number_in;          // 40018 - Holding Register 17 - Use this register to write the serial number (first input the password)
+    uint16_t sn_password;               // 40019 - Holding Register 18 - Writing the correct value into this register enables 1 serial number write for 15 seconds
+    uint16_t sn_write_status;           // 40020 - Holding Register 19 - Status for the last serial number write attempt 
                                         // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
-    uint16_t adc_samples_amount;        // Ammount of samples to be averaged for ADC mreasurements.
+    
 }holding_register;
 
 // ---------------------------------------------------------------------------------------------
@@ -131,7 +135,7 @@ typedef struct
 // -------------------------------------- Input Registers --------------------------------------
 /* Input registers contain:
  * The sensor type (In this case defined as code 100 -> Energy Board)
- * The sensor´s/board´s serial number (in this case 1, later to be changed for a defined convention) */
+ * The sensor?s/board?s serial number (in this case 1, later to be changed for a defined convention) */
 
 // Default Values for Input Registers
 #define RTU_SERIAL_NUMBER_DEFAULT   1
@@ -139,38 +143,40 @@ typedef struct
 
 typedef struct
 {
-    uint16_t sensor_type;               // 30000 - Input Register 0 - Code for phase/resonance/power sensor
-    uint16_t serial_number;             // 30001 - Input Register 1 - Sensor´s serial number
+    uint16_t sensor_type;                   // 30000 - Input Register 0 - Code for phase/resonance/power sensor
+    uint16_t serial_number;                 // 30001 - Input Register 1 - Sensor?s serial number
        
-    uint16_t phase_difference;          // 30002 - Input Register 2 - Measured Phase between V and I in tmr1 ticks
-    uint16_t phase_ready;               // 30003 - Input Register 3 - 0 - Phase measurement is still in progress | 1 - phase measurement ready
-    uint16_t ADC_peak_voltage;          // 30004 - Input Register 4 - Peak Voltage in ADC steps
-    uint16_t ADC_peak_current;          // 30005 - Input Register 5 - Peak Current in ADC steps
+    uint16_t phase_difference;              // 30002 - Input Register 2 - Measured Phase between V and I in tmr1 ticks
+    uint16_t phase_ready;                   // 30003 - Input Register 3 - 0 - Phase measurement is still in progress | 1 - phase measurement ready
+    uint16_t ADC_peak_voltage;              // 30004 - Input Register 4 - Peak Voltage in ADC steps
+    uint16_t ADC_peak_current;              // 30005 - Input Register 5 - Peak Current in ADC steps
+    uint16_t volt_adc_measurement_ready;    // 30006 - Input Register 6 - Voltage AVG ADC measurement ready for reading mobdus register flag
+    uint16_t curr_adc_measurement_ready;    // 30007 - Input Register 7 - Current AVG ADC measurement ready for reading mobdus register flag
     
-    uint16_t res_freq_hi;               // 30006 - Input Register 6 - High word (upper 16 bits) of obtained resonance frequency 
-    uint16_t res_freq_lo;               // 30007 - Input Register 7 - Low word (lower 16 bits) of obtained resonance frecunecy
-    uint16_t res_freq_status;           // 30008 - Input Register 8 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain | 3 Measurement in progress
+    uint16_t internal_measurement_ready;    // 30008 - Input Register 8 - Internal phase measurement ready flag
+    uint16_t res_freq_status;               // 30009 - Input Register 9 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain | 3 Measurement in progress
     
-    uint16_t best_freq_phase_hi;        // 30009 - Input Register 9 - High word (upper 16 bits) of obtained resonance frequency 
-    uint16_t best_freq_phase_lo;        // 30010 - Input Register 10 - Low word (lower 16 bits) of obtained resonance frecunecy
+    uint16_t res_freq_hi;                   // 30010 - Input Register 10 - High word (upper 16 bits) of obtained resonance frequency 
+    uint16_t res_freq_lo;                   // 30011 - Input Register 11 - Low word (lower 16 bits) of obtained resonance frecunecy
+    uint16_t res_freq_phase;                // 30012 - Input Register 12 - Measured phase for the resonance frequency
+    uint16_t res_freq_curr;                 // 30013 - Input Register 13 - Measured current for the resonance frequency
     
-    uint16_t best_freq_curr_hi;         // 30011 - Input Register 11 - High word (upper 16 bits) of obtained resonance frequency 
-    uint16_t best_freq_curr_lo;         // 30012 - Input Register 12 - Low word (lower 16 bits) of obtained resonance frecunecy
+    uint16_t best_freq_phase_hi;            // 30014 - Input Register 14 - High word (upper 16 bits) of obtained min-phase frequency 
+    uint16_t best_freq_phase_lo;            // 30015 - Input Register 15 - Low word (lower 16 bits) of obtained min-phase frecunecy
+    uint16_t best_freq_phase_phase;         // 30016 - Input Register 16 - Measured phase for the lowest phase frequency
+    uint16_t best_freq_phase_curr;          // 30017 - Input Register 17 - Measured current for the lowest phase frequency
     
-    uint16_t best_freq_phase_phase;     // 30013 - Input Register 13 - Measured phase for the lowest phase frequency
-    uint16_t best_freq_phase_curr;      // 30014 - Input Register 14 - Measured current for the lowest phase frequency
-    uint16_t best_freq_curr_phase;      // 30014 - Input Register 15 - Measured phase for the highest current frequency
-    uint16_t best_freq_curr_curr;       // 30016 - Input Register 16 - Measured current for the highest current frequency
-    
-    uint16_t res_freq_phase;            // 30017 - Input Register 17 - Measured phase for the resonance frequency
-    uint16_t res_freq_curr;            // 30018 - Input Register 18 - Measured current for the resonance frequency
-        
-    uint16_t internal_measurement_ready; // 19
-    
-    uint16_t curr_adc_measurement_ready; // 20
-    
-    uint16_t system_status;             // 30021 - Input Register 13 - System Status
-    uint16_t last_error;                // 30022 - Input Register 14 - Last Error
+    uint16_t best_freq_curr_hi;             // 30018 - Input Register 18 - High word (upper 16 bits) of obtained max-current frequency 
+    uint16_t best_freq_curr_lo;             // 30019 - Input Register 19 - Low word (lower 16 bits) of obtained max-current frecunecy 
+    uint16_t best_freq_curr_phase;          // 30020 - Input Register 20 - Measured phase for the highest current frequency
+    uint16_t best_freq_curr_curr;           // 30021 - Input Register 21 - Measured current for the highest current frequency
+   
+    uint16_t test_1;                        // 30022 - Input Register 22 - Debugging Register 1
+    uint16_t test_2;                        // 30023 - Input Register 22 - Debugging Register 2
+    uint16_t test_3;                        // 30024 - Input Register 22 - Debugging Register 3
+            
+    uint16_t system_status;                 // 30025 - Input Register 13 - System Status
+    uint16_t last_error;                    // 30026 - Input Register 14 - Last Error
 }input_register;
 // ---------------------------------------------------------------------------------------------
 

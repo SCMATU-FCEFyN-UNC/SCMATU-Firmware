@@ -46,6 +46,8 @@
       <itemPath>nanomodbus.h</itemPath>
       <itemPath>nvm_config.h</itemPath>
       <itemPath>robust_measurement.h</itemPath>
+      <itemPath>resonance_sweep.h</itemPath>
+      <itemPath>adc_measurements.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -111,6 +113,8 @@
       <itemPath>nanomodbus.c</itemPath>
       <itemPath>nvm_config.c</itemPath>
       <itemPath>robust_measurement.c</itemPath>
+      <itemPath>resonance_sweep.c</itemPath>
+      <itemPath>adc_measurements.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
