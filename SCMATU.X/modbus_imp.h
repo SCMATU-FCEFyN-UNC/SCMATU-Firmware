@@ -34,7 +34,7 @@ extern "C" {
 // ------------------- Modbus Limits -------------------
 #define COILS_ADDR_MAX          6
 #define REGS_INPUT_ADDR_MAX     26
-#define REGS_HOLDING_ADDR_MAX   21
+#define REGS_HOLDING_ADDR_MAX   22
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
 
@@ -85,6 +85,7 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_CURR_AD_GAIN        39493   // Vout = Vin*39.493
 #define DEFAULT_SHUNT_RES           1010    // I = (((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000)) / (shunt_res/100)
 #define MAX_ADC_SAMPLES             10      // Each ADC measurement is the average of max 10 ADC samples
+#define DEFAULT_MAX_DISTANCE_HZ     20000
 
 // Holding registers for serial number write operations     
 #define SN_PASSWORD_CORRECT         8336    // This value must be written into holding register 19 in order to enable a serial number write.
@@ -96,6 +97,8 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define SNW_STATUS_NOT_AUTHORIZED   3 
 
 #define MAX_ADC_SAMPLES             10
+
+#define MAX_ALLOWED_DISTANCE_HZ 60000
 // -----------------------------------------------------------------------------------------------------------------------
 
 typedef struct
@@ -123,9 +126,11 @@ typedef struct
     uint16_t shunt_res;                 // 40016 - Holding Register 16 - Shunt resistor for current determination (I = V / R) [Ohm*100]
     uint16_t adc_samples_amount;        // 40017 - Holding Register 17 - Ammount of samples to be averaged for ADC mreasurements.
     
-    uint16_t serial_number_in;          // 40018 - Holding Register 17 - Use this register to write the serial number (first input the password)
-    uint16_t sn_password;               // 40019 - Holding Register 18 - Writing the correct value into this register enables 1 serial number write for 15 seconds
-    uint16_t sn_write_status;           // 40020 - Holding Register 19 - Status for the last serial number write attempt 
+    uint16_t phase_curr_max_distance;   // 40018 - Holding Register 18 - Max disntance (Hz) between Best Current Freq and Best Phase Freq (avois anti-resonance)
+    
+    uint16_t serial_number_in;          // 40019 - Holding Register 19 - Use this register to write the serial number (first input the password)
+    uint16_t sn_password;               // 40020 - Holding Register 20 - Writing the correct value into this register enables 1 serial number write for 15 seconds
+    uint16_t sn_write_status;           // 40021 - Holding Register 21 - Status for the last serial number write attempt 
                                         // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
     
 }holding_register;

@@ -156,6 +156,7 @@ void set_holding_regs_to_default(holding_register* regs)
     regs->current_adecuator_gain    = DEFAULT_CURR_AD_GAIN;
     regs->shunt_res                 = DEFAULT_SHUNT_RES;
     regs->adc_samples_amount        = MAX_ADC_SAMPLES;
+    regs->phase_curr_max_distance   = DEFAULT_MAX_DISTANCE_HZ;
     
     regs->serial_number_in          = 0;
     regs->sn_password               = 0;
@@ -270,44 +271,45 @@ void default_values_register(mod_bus_registers* registers)
         
         EUSART1_SetBaudRate(registers->server_holding_register.baudrate);
         
-        registers->server_input_register.sensor_type              = EEPROM_ReadWord(SENSOR_TYPE_ADDR);
-        registers->server_input_register.serial_number            = EEPROM_ReadWord(SERIAL_NUMBER_ADDR);
+        registers->server_input_register.sensor_type                    = EEPROM_ReadWord(SENSOR_TYPE_ADDR);
+        registers->server_input_register.serial_number                  = EEPROM_ReadWord(SERIAL_NUMBER_ADDR);
         
-        registers->server_holding_register.frequency_hi           = EEPROM_ReadWord(EEPROM_FREQ_HI_ADDR);
-        registers->server_holding_register.frequency_lo           = EEPROM_ReadWord(EEPROM_FREQ_LO_ADDR);
-        registers->server_holding_register.voltage_level          = EEPROM_ReadWord(EEPROM_VOLT_LVL_ADDR);
+        registers->server_holding_register.frequency_hi                 = EEPROM_ReadWord(EEPROM_FREQ_HI_ADDR);
+        registers->server_holding_register.frequency_lo                 = EEPROM_ReadWord(EEPROM_FREQ_LO_ADDR);
+        registers->server_holding_register.voltage_level                = EEPROM_ReadWord(EEPROM_VOLT_LVL_ADDR);
         
-        registers->server_holding_register.on_time_ms             = EEPROM_ReadWord(EEPROM_ON_TIME_MS_ADDR);
-        registers->server_holding_register.off_time_ms            = EEPROM_ReadWord(EEPROM_OFF_TIME_MS_ADDR);
+        registers->server_holding_register.on_time_ms                   = EEPROM_ReadWord(EEPROM_ON_TIME_MS_ADDR);
+        registers->server_holding_register.off_time_ms                  = EEPROM_ReadWord(EEPROM_OFF_TIME_MS_ADDR);
         
-        registers->server_holding_register.freq_mode              = EEPROM_ReadWord(EEPROM_FREQ_MODE_ADDR);
+        registers->server_holding_register.freq_mode                    = EEPROM_ReadWord(EEPROM_FREQ_MODE_ADDR);
         
-        registers->server_holding_register.samples_amount         = EEPROM_ReadWord(EEPROM_SAMPLES_AMOUNT_ADDR);
-        registers->server_holding_register.freq_step              = EEPROM_ReadWord(EEPROM_FREQ_STEP_ADDR);
+        registers->server_holding_register.samples_amount               = EEPROM_ReadWord(EEPROM_SAMPLES_AMOUNT_ADDR);
+        registers->server_holding_register.freq_step                    = EEPROM_ReadWord(EEPROM_FREQ_STEP_ADDR);
         
         // Load frequency range registers
-        registers->server_holding_register.freq_range_start_hi    = EEPROM_ReadWord(EEPROM_FREQ_RANGE_START_HI_ADDR);
-        registers->server_holding_register.freq_range_start_lo    = EEPROM_ReadWord(EEPROM_FREQ_RANGE_START_LO_ADDR);
-        registers->server_holding_register.freq_range_end_hi      = EEPROM_ReadWord(EEPROM_FREQ_RANGE_END_HI_ADDR);
-        registers->server_holding_register.freq_range_end_lo      = EEPROM_ReadWord(EEPROM_FREQ_RANGE_END_LO_ADDR);
+        registers->server_holding_register.freq_range_start_hi          = EEPROM_ReadWord(EEPROM_FREQ_RANGE_START_HI_ADDR);
+        registers->server_holding_register.freq_range_start_lo          = EEPROM_ReadWord(EEPROM_FREQ_RANGE_START_LO_ADDR);
+        registers->server_holding_register.freq_range_end_hi            = EEPROM_ReadWord(EEPROM_FREQ_RANGE_END_HI_ADDR);
+        registers->server_holding_register.freq_range_end_lo            = EEPROM_ReadWord(EEPROM_FREQ_RANGE_END_LO_ADDR);
         
-        registers->server_holding_register.voltage_adecuator_gain = EEPROM_ReadWord(EEPROM_VOLT_AD_GAIN_ADDR);
-        registers->server_holding_register.current_adecuator_gain = EEPROM_ReadWord(EEPROM_CURR_AD_GAIN_ADDR);
-        registers->server_holding_register.shunt_res              = EEPROM_ReadWord(EEPROM_SHUNT_RES_ADDR);
-        registers->server_holding_register.adc_samples_amount     = EEPROM_ReadWord(EEPROM_ADC_SAMPLES_ADDR);
+        registers->server_holding_register.voltage_adecuator_gain       = EEPROM_ReadWord(EEPROM_VOLT_AD_GAIN_ADDR);
+        registers->server_holding_register.current_adecuator_gain       = EEPROM_ReadWord(EEPROM_CURR_AD_GAIN_ADDR);
+        registers->server_holding_register.shunt_res                    = EEPROM_ReadWord(EEPROM_SHUNT_RES_ADDR);
+        registers->server_holding_register.adc_samples_amount           = EEPROM_ReadWord(EEPROM_ADC_SAMPLES_ADDR);
+        registers->server_holding_register.phase_curr_max_distance      = EEPROM_ReadWord(EEPROM_MAX_PHASE_CURR_ADDR);
         
         // Load serial number write registers
-        registers->server_holding_register.serial_number_in       = EEPROM_ReadWord(EEPROM_SERIAL_NUMBER_IN_ADDR);
-        registers->server_holding_register.sn_password            = EEPROM_ReadWord(EEPROM_SN_PASSWORD_ADDR);
-        registers->server_holding_register.sn_write_status        = EEPROM_ReadWord(EEPROM_SN_WRITE_STATUS_ADDR);
+        registers->server_holding_register.serial_number_in             = EEPROM_ReadWord(EEPROM_SERIAL_NUMBER_IN_ADDR);
+        registers->server_holding_register.sn_password                  = EEPROM_ReadWord(EEPROM_SN_PASSWORD_ADDR);
+        registers->server_holding_register.sn_write_status              = EEPROM_ReadWord(EEPROM_SN_WRITE_STATUS_ADDR);
         
         // Load resonance frequency results
-        registers->server_input_register.res_freq_hi              = EEPROM_ReadWord(EEPROM_RES_FREQ_HI_ADDR);
-        registers->server_input_register.res_freq_lo              = EEPROM_ReadWord(EEPROM_RES_FREQ_LO_ADDR);
-        registers->server_input_register.best_freq_phase_hi       = EEPROM_ReadWord(EEPROM_BEST_PHASE_FREQ_HI_ADDR);
-        registers->server_input_register.best_freq_phase_lo       = EEPROM_ReadWord(EEPROM_BEST_PHASE_FREQ_LO_ADDR);
-        registers->server_input_register.best_freq_curr_hi        = EEPROM_ReadWord(EEPROM_BEST_CURR_FREQ_HI_ADDR);
-        registers->server_input_register.best_freq_curr_lo        = EEPROM_ReadWord(EEPROM_BEST_CURR_FREQ_LO_ADDR);
+        registers->server_input_register.res_freq_hi                    = EEPROM_ReadWord(EEPROM_RES_FREQ_HI_ADDR);
+        registers->server_input_register.res_freq_lo                    = EEPROM_ReadWord(EEPROM_RES_FREQ_LO_ADDR);
+        registers->server_input_register.best_freq_phase_hi             = EEPROM_ReadWord(EEPROM_BEST_PHASE_FREQ_HI_ADDR);
+        registers->server_input_register.best_freq_phase_lo             = EEPROM_ReadWord(EEPROM_BEST_PHASE_FREQ_LO_ADDR);
+        registers->server_input_register.best_freq_curr_hi              = EEPROM_ReadWord(EEPROM_BEST_CURR_FREQ_HI_ADDR);
+        registers->server_input_register.best_freq_curr_lo              = EEPROM_ReadWord(EEPROM_BEST_CURR_FREQ_LO_ADDR);
     }
 }
 
@@ -435,8 +437,20 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
     // Check for changes in ADC samples amount
     if(modbus_data->server_holding_register.adc_samples_amount != prev_holding_regs->adc_samples_amount)
     {
+        if(modbus_data->server_holding_register.adc_samples_amount > MAX_ADC_SAMPLES) {modbus_data->server_holding_register.adc_samples_amount = MAX_ADC_SAMPLES;}
         prev_holding_regs->adc_samples_amount = modbus_data->server_holding_register.adc_samples_amount;
         EEPROM_WriteWord(EEPROM_ADC_SAMPLES_ADDR, modbus_data->server_holding_register.adc_samples_amount);
+    }
+
+    // Check for changes in MAX best_phase_freq - best_curr_freq distance
+    if(modbus_data->server_holding_register.phase_curr_max_distance != prev_holding_regs->phase_curr_max_distance)
+    {
+        if (modbus_data->server_holding_register.phase_curr_max_distance > MAX_ALLOWED_DISTANCE_HZ || 
+        modbus_data->server_holding_register.phase_curr_max_distance <= 0) {
+        modbus_data->server_holding_register.phase_curr_max_distance = MAX_ALLOWED_DISTANCE_HZ;}
+        
+        prev_holding_regs->phase_curr_max_distance = modbus_data->server_holding_register.phase_curr_max_distance;
+        EEPROM_WriteWord(EEPROM_MAX_PHASE_CURR_ADDR, modbus_data->server_holding_register.phase_curr_max_distance);
     }
     
     // Check for changes in serial number input

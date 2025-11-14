@@ -28,6 +28,9 @@ static sweep_result_t best_phase = {0, 32767, 0};
 static sweep_result_t best_current = {0, 0, 0};
 static sweep_result_t best_combined = {0, 32767, 0};
 
+static uint32_t best_curr_distance = 0xFFFFFFFF;  // track how close best current is to best-phase freq
+static uint16_t max_allowed_distance_hz = DEFAULT_MAX_DISTANCE_HZ;
+
 // ---------------- Phase measurement trigger ----------------
 void trigger_phase_measurement(bool is_internal, mod_bus_registers* modbus_data)
 {
@@ -69,22 +72,26 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
     case SWEEP_IDLE:
         if (resonance_auto_detection_running)
         {
-            // desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
-            sweep_start = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_start_hi << 16) | modbus_data->server_holding_register.freq_range_start_lo);
-            sweep_end = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_end_hi << 16) | modbus_data->server_holding_register.freq_range_end_lo);
-            sweep_step = (uint32_t)modbus_data->server_holding_register.freq_step;
+            sweep_start = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_start_hi << 16) |
+                                     modbus_data->server_holding_register.freq_range_start_lo);
+            sweep_end   = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_end_hi << 16) |
+                                     modbus_data->server_holding_register.freq_range_end_lo);
+            sweep_step  = (uint32_t)modbus_data->server_holding_register.freq_step;
 
+            max_allowed_distance_hz = modbus_data->server_holding_register.phase_curr_max_distance;
+            
             sweep_freq = sweep_start;
 
             // Reset best values
             best_phase.freq = 0;
-            best_phase.phase_ns = 32767; // initialize with large phase (worst)
+            best_phase.phase_ns = 32767;
             best_phase.current_adc = 0;
 
             best_current.freq = 0;
             best_current.phase_ns = 0;
             best_current.current_adc = 0;
 
+            best_curr_distance = 0xFFFFFFFF;
             max_current_adc = 0;
             best_combined.phase_ns = 32767;
 
@@ -146,25 +153,32 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
                 best_phase.phase_ns = last_phase_ns;
                 best_phase.current_adc = current_adc;
             }
+            
+            // --- Evaluate best current (highest) with distance bias ---
+            // Priority 1: higher current near the best-phase frequency
+            // Priority 2: closer distance to resonance
+            // Priority 3: lower absolute phase (tie-breaker)
+            uint32_t curr_distance = (sweep_freq > best_phase.freq)
+                                     ? (sweep_freq - best_phase.freq)
+                                     : (best_phase.freq - sweep_freq);
 
-            // --- Evaluate best current (highest) ---
             if (current_adc > best_current.current_adc)
             {
-                best_current.freq = sweep_freq;
-                best_current.phase_ns = last_phase_ns;
+                best_current.freq        = sweep_freq;
+                best_current.phase_ns    = last_phase_ns;
                 best_current.current_adc = current_adc;
             }
 
-            // ? --- Evaluate overall "resonance" frequency ---
-            // Priority 1: higher current
-            // Priority 2: lower absolute phase (if current equal)
-            if ((current_adc > max_current_adc) ||
-                ((current_adc == max_current_adc) && (abs_phase < abs_best)))
+            // --- Evaluate overall "resonance" frequency ---
+            if (((current_adc > max_current_adc) && (curr_distance < max_allowed_distance_hz)) ||
+            ((current_adc == max_current_adc) && (curr_distance < best_curr_distance)) ||
+            ((current_adc == max_current_adc) && (curr_distance == best_curr_distance) && (abs_phase < abs_best)))
             {
                 max_current_adc = current_adc;
-                best_combined.freq = sweep_freq;
-                best_combined.phase_ns = last_phase_ns;
+                best_combined.freq        = sweep_freq;
+                best_combined.phase_ns    = last_phase_ns;
                 best_combined.current_adc = current_adc;
+                best_curr_distance        = curr_distance;
             }
 
             sweep_state = SWEEP_NEXT_FREQ;
@@ -206,7 +220,9 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
         // Indicate sweep completed
         modbus_data->server_input_register.res_freq_status = 1;
         resonance_auto_detection_running = false;
+        
         AD9833SetFrequency(AD9833_REG_FREQ0, best_combined.freq);
+         
         sweep_state = SWEEP_IDLE;
         break;
     }

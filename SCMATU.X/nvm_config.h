@@ -37,19 +37,20 @@
 #define EEPROM_CURR_AD_GAIN_ADDR                (EEPROM_START_ADDRESS + 35) // Holding Register 15
 #define EEPROM_SHUNT_RES_ADDR                   (EEPROM_START_ADDRESS + 37) // Holding Register 16
 #define EEPROM_ADC_SAMPLES_ADDR                 (EEPROM_START_ADDRESS + 39) // Holding Register 17
+#define EEPROM_MAX_PHASE_CURR_ADDR              (EEPROM_START_ADDRESS + 41) // Holding Register 18
 
-#define EEPROM_RES_FREQ_HI_ADDR                 (EEPROM_START_ADDRESS + 41) // Input Register 10
-#define EEPROM_RES_FREQ_LO_ADDR                 (EEPROM_START_ADDRESS + 43) // Input Register 11
+#define EEPROM_RES_FREQ_HI_ADDR                 (EEPROM_START_ADDRESS + 43) // Input Register 10
+#define EEPROM_RES_FREQ_LO_ADDR                 (EEPROM_START_ADDRESS + 45) // Input Register 11
 
-#define EEPROM_BEST_PHASE_FREQ_HI_ADDR          (EEPROM_START_ADDRESS + 45) // Input Register 14
-#define EEPROM_BEST_PHASE_FREQ_LO_ADDR          (EEPROM_START_ADDRESS + 47) // Input Register 15
+#define EEPROM_BEST_PHASE_FREQ_HI_ADDR          (EEPROM_START_ADDRESS + 47) // Input Register 14
+#define EEPROM_BEST_PHASE_FREQ_LO_ADDR          (EEPROM_START_ADDRESS + 49) // Input Register 15
 
-#define EEPROM_BEST_CURR_FREQ_HI_ADDR           (EEPROM_START_ADDRESS + 49) // Input Register 18
-#define EEPROM_BEST_CURR_FREQ_LO_ADDR           (EEPROM_START_ADDRESS + 51) // Input Register 19
+#define EEPROM_BEST_CURR_FREQ_HI_ADDR           (EEPROM_START_ADDRESS + 51) // Input Register 18
+#define EEPROM_BEST_CURR_FREQ_LO_ADDR           (EEPROM_START_ADDRESS + 53) // Input Register 19
 
-#define EEPROM_SERIAL_NUMBER_IN_ADDR            (EEPROM_START_ADDRESS + 53) // Holding Register 18
-#define EEPROM_SN_PASSWORD_ADDR                 (EEPROM_START_ADDRESS + 55) // Holding Register 19
-#define EEPROM_SN_WRITE_STATUS_ADDR             (EEPROM_START_ADDRESS + 57) // Holding Register 20
+#define EEPROM_SERIAL_NUMBER_IN_ADDR            (EEPROM_START_ADDRESS + 55) // Holding Register 19
+#define EEPROM_SN_PASSWORD_ADDR                 (EEPROM_START_ADDRESS + 57) // Holding Register 20
+#define EEPROM_SN_WRITE_STATUS_ADDR             (EEPROM_START_ADDRESS + 59) // Holding Register 21
 
 // Function prototype
 uint16_t EEPROM_ReadWord(uint16_t address);
