@@ -90,8 +90,8 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_AUTO_FREQ_SWEEP_WIDTH       1000
 #define MAX_AUTO_FREQ_SWEEP_WIDTH           10000
 #define DEFAULT_CLOSED_LOOP_CONTROL_ENABLE  0
-#define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  5     // Default 10 minutes
-#define MIN_CLOSED_LOOP_CONTROL_PERIOD      3     // Min 3 minutes
+#define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  600     // Default 10 minutes
+#define MIN_CLOSED_LOOP_CONTROL_PERIOD      120     // Min 3 minutes
 #define MAX_CLOSED_LOOP_CONTROL_PERIOD      3600    // Max 60 minutes
 
 // Holding registers for serial number write operations     
