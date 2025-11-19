@@ -1,6 +1,7 @@
+#include "mcc_generated_files/system/system.h"
 #include "sn_handler.h"
 #include "nvm_config.h"
-#include "mcc_generated_files/system/system.h"
+#include "closed_loop_control.h"
 
 // -----------------------------------------------------------------------------
 // Internal state (module-private)
@@ -9,6 +10,13 @@
 static bool sn_write_enabled = false;
 static uint8_t sn_enabled_countdown = 0;
 static bool sn_write_happened = false;
+
+extern bool sampling_active;
+extern bool resonance_auto_detection_running;
+extern bool closed_loop_enabled;
+extern bool closed_loop_timer_enabled;
+extern uint16_t closed_loop_counter;
+extern volatile bool closed_loop_trigger_flag;
 
 // -----------------------------------------------------------------------------
 // TMR0 periodic handler
@@ -44,18 +52,34 @@ void sn_write_handler(uint16_t *status_reg)
 
 void sn_submit_password(uint16_t password, uint16_t *status_reg)
 {
-    if (!sn_write_enabled)
+    if((resonance_auto_detection_running)||(sampling_active))
     {
-        if (password == SN_PASSWORD_CORRECT)
+        *status_reg = SNW_STATUS_NOT_AVAILABLE;
+        return;
+    }
+    else
+    {
+        if (!sn_write_enabled)
         {
-            sn_enabled_countdown = 0; // Reset timer
-            sn_write_happened = false;
-            sn_write_enabled = true;           
-        }
-        else
-        {
-            *status_reg = SNW_STATUS_WRONG_PASS;
-            sn_write_enabled = false;
+            if (password == SN_PASSWORD_CORRECT)
+            {
+                sn_enabled_countdown = 0; // Reset timer
+                sn_write_happened = false;
+
+                // Disable closed loop control to avoid conflicts
+                closed_loop_enabled = false;
+                closed_loop_trigger_flag = false;
+                closed_loop_counter = 0;
+
+                enable_closed_loop_timer(); 
+
+                sn_write_enabled = true;           
+            }
+            else
+            {
+                *status_reg = SNW_STATUS_WRONG_PASS;
+                sn_write_enabled = false;
+            }
         }
     }
 }
@@ -65,27 +89,24 @@ void sn_submit_password(uint16_t password, uint16_t *status_reg)
 // Returns true if write was allowed
 // -----------------------------------------------------------------------------
 
-bool sn_attempt_write(uint16_t serial_in, uint16_t *status_reg)
+bool sn_attempt_write(uint16_t serial_in, mod_bus_registers* modbus_data)
 {
     if (!sn_write_enabled)
     {
         // User attempted write without valid password
-        if (*status_reg != SNW_STATUS_WRONG_PASS)
-            *status_reg = SNW_STATUS_NOT_AUTHORIZED;
+        if (modbus_data->server_holding_register.sn_write_status != SNW_STATUS_WRONG_PASS)
+            modbus_data->server_holding_register.sn_write_status = SNW_STATUS_NOT_AUTHORIZED;
 
         return false;
     }
     
-    // Serial number write authorized
-    *status_reg = SNW_STATUS_SUCCESS;
-    
     // Register that the input register serial_number has been updated
     sn_write_happened = true;
-
+     
     // Disable future writes until a new password is given
     sn_write_enabled = false;
     sn_enabled_countdown = 0;
-
+     
     // Write to EEPROM (optional — remove if you handle EEPROM outside)
     EEPROM_WriteWord(SERIAL_NUMBER_ADDR, serial_in);
 

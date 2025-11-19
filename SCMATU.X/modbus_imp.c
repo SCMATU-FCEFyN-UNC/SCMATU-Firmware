@@ -566,14 +566,19 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
         if (ok)
         {
             // If allowed, update input register
-            modbus_data->server_input_register.serial_number =
-                modbus_data->server_holding_register.serial_number_in;
+            modbus_data->server_input_register.serial_number = modbus_data->server_holding_register.serial_number_in;
+            modbus_data->server_holding_register.sn_write_status = SNW_STATUS_SUCCESS;
+            
+            // Return timer and closed_loop_enable to their original state
+            closed_loop_enabled = (modbus_data->server_holding_register.closed_loop_control_enable == 1);
+            if (closed_loop_enabled != closed_loop_timer_enabled)  // Enable timer if it should be on, disable it if it should be off
+            {
+                closed_loop_enabled ? enable_closed_loop_timer() : disable_closed_loop_timer();
+            }  
         }
-
         modbus_data->server_holding_register.serial_number_in = 0;
         prev_holding_regs->serial_number_in = 0;
     }
-
     // ------------------------ SN logic ------------------------
 }
 

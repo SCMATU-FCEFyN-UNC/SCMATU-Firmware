@@ -90,8 +90,8 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_AUTO_FREQ_SWEEP_WIDTH       1000
 #define MAX_AUTO_FREQ_SWEEP_WIDTH           10000
 #define DEFAULT_CLOSED_LOOP_CONTROL_ENABLE  0
-#define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  600     // Default 10 minutes
-#define MIN_CLOSED_LOOP_CONTROL_PERIOD      120     // Min 3 minutes
+#define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  10     // Default 10 minutes
+#define MIN_CLOSED_LOOP_CONTROL_PERIOD      3     // Min 3 minutes
 #define MAX_CLOSED_LOOP_CONTROL_PERIOD      3600    // Max 60 minutes
 
 // Holding registers for serial number write operations     
@@ -102,6 +102,7 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define SNW_STATUS_SUCCESS              1 
 #define SNW_STATUS_WRONG_PASS           2 
 #define SNW_STATUS_NOT_AUTHORIZED       3 
+#define SNW_STATUS_NOT_AVAILABLE        4 
 
 #define MAX_ADC_SAMPLES                 10
 
@@ -141,7 +142,7 @@ typedef struct
     uint16_t serial_number_in;              // 40022 - Holding Register 22 - Use this register to write the serial number (first input the password)
     uint16_t sn_password;                   // 40023 - Holding Register 23 - Writing the correct value into this register enables 1 serial number write for 15 seconds
     uint16_t sn_write_status;               // 40024 - Holding Register 24 - Status for the last serial number write attempt 
-                                            // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
+                                            // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized | 4- Not Available
 }holding_register;
 
 // ---------------------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 // API
 void sn_write_handler(uint16_t *status_reg);
 void sn_submit_password(uint16_t password, uint16_t *status_reg);
-bool sn_attempt_write(uint16_t serial_in, uint16_t *status_reg);
+bool sn_attempt_write(uint16_t serial_in, mod_bus_registers* modbus_data);
 bool sn_is_write_enabled(void);
 
 #endif

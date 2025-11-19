@@ -145,6 +145,7 @@ int main(void)
     TMR0_OverflowCallbackRegister(&TMR0_Interrupt_Handler);
     closed_loop_period_seconds = modbus_data.server_holding_register.closed_loop_control_period;
     closed_loop_enabled = (modbus_data.server_holding_register.closed_loop_control_enable == 1);
+    disable_closed_loop_timer(); // Initially disabled
     // ----------------------------- /Closed Loop Control Initialization ------------------------------
 
     
@@ -160,33 +161,33 @@ int main(void)
             // Handle changes in Holding Registers
             holding_register_change_handler(&modbus_data, &prev_holding_regs, &nmbs); 
             // Handle changes in coil registers
-            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 0))
+            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 0) && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
                 //* 0            | Enable/Disable transducer
             }
-            if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
-                nmbs_bitfield_read(modbus_data.server_coils.coils, 2) && (!resonance_auto_detection_running))
+            if ((nmbs_bitfield_read(modbus_data.server_coils.coils, 1) || nmbs_bitfield_read(modbus_data.server_coils.coils, 2)) 
+               && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
                 adc_measurement_handler(&modbus_data); 
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 2, 0);
             }
-            if ((nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) || 
-                (nmbs_bitfield_read(modbus_data.server_coils.coils, 6)) && (!resonance_auto_detection_running))
+            if (((nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) || (nmbs_bitfield_read(modbus_data.server_coils.coils, 6))) 
+               && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
                 bool internal = nmbs_bitfield_read(modbus_data.server_coils.coils, 6);
                 trigger_phase_measurement(internal, &modbus_data);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 6, 0);
             }
-            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) && (!resonance_auto_detection_running)) // Apply changes in frequency
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) && (!resonance_auto_detection_running) && (!sn_is_write_enabled())) // Apply changes in frequency
             {
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 4, 0);
                 desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
                 AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
             }
-            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 5)) && (!resonance_auto_detection_running))
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 5)) && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
                 if(!resonance_auto_detection_running)
                 {
