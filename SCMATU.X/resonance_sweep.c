@@ -1,5 +1,7 @@
 #include "mcc_generated_files/system/system.h"
 #include "resonance_sweep.h"
+#include "adc_measurements.h"
+#include "closed_loop_control.h"
 #include "nanomodbus.h"
 
 extern uint8_t sample_index;
@@ -31,9 +33,12 @@ static sweep_result_t best_combined = {0, 32767, 0};
 static uint32_t best_curr_distance = 0xFFFFFFFF;  // track how close best current is to best-phase freq
 static uint16_t max_allowed_distance_hz = DEFAULT_MAX_DISTANCE_HZ;
 
+extern bool closed_loop_enabled;
+extern bool internal_ADC_trigger;
+
 // ---------------- Phase measurement trigger ----------------
 void trigger_phase_measurement(bool is_internal, mod_bus_registers* modbus_data)
-{
+{  
     internal_request = is_internal;
     measurement_initiated = true;
     modbus_data->server_input_register.phase_ready = 0;
@@ -72,6 +77,8 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
     case SWEEP_IDLE:
         if (resonance_auto_detection_running)
         {
+            //disable_closed_loop_timer();
+            
             sweep_start = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_start_hi << 16) |
                                      modbus_data->server_holding_register.freq_range_start_lo);
             sweep_end   = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_end_hi << 16) |
@@ -125,14 +132,16 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
             // Phase value is now in modbus_data.server_input_register.phase_difference
             last_phase_ns = modbus_data->server_input_register.phase_difference;
 
-            //* For Debugginh, 50kHz -> 0ns phase, 49900Hz -> 20ns phase, 49800Hz -> 40ns phase
-            /*if(sweep_freq == 49800){modbus_data->server_input_register.test_1 = (uint16_t)last_phase_ns;}
+            /* For Debugging, 50kHz -> 0ns phase, 49900Hz -> 20ns phase, 49800Hz -> 40ns phase
+            if(sweep_freq == 49800){modbus_data->server_input_register.test_1 = (uint16_t)last_phase_ns;}
             if(sweep_freq == 49900){modbus_data->server_input_register.test_2 = (uint16_t)last_phase_ns;}
             if(sweep_freq == 50000){modbus_data->server_input_register.test_3 = (uint16_t)last_phase_ns;}*/
             
             // Now trigger ADC current measurement
             modbus_data->server_input_register.curr_adc_measurement_ready = 0;
-            nmbs_bitfield_write(modbus_data->server_coils.coils, 2, 1); // coil 2 ? measure power (current only)
+            //nmbs_bitfield_write(modbus_data->server_coils.coils, 2, 1); // coil 2 ? measure power (current only)
+            //internal_ADC_trigger = true;
+            adc_measurement_handler(modbus_data); // Here I order the ADC measurement
             sweep_state = SWEEP_MEASURE_CURRENT;
         }
         break;
@@ -220,10 +229,25 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
         // Indicate sweep completed
         modbus_data->server_input_register.res_freq_status = 1;
         resonance_auto_detection_running = false;
-        
+
         AD9833SetFrequency(AD9833_REG_FREQ0, best_combined.freq);
-         
+
+        //modbus_data->server_holding_register.freq_step = 1;
+
+        uint32_t new_start = best_combined.freq - modbus_data->server_holding_register.auto_freq_sweep_width;
+        modbus_data->server_holding_register.freq_range_start_hi = (uint16_t)(new_start >> 16);
+        modbus_data->server_holding_register.freq_range_start_lo = (uint16_t)(new_start & 0xFFFF);
+
+        uint32_t new_end = best_combined.freq + modbus_data->server_holding_register.auto_freq_sweep_width;
+        modbus_data->server_holding_register.freq_range_end_hi = (uint16_t)(new_end >> 16);
+        modbus_data->server_holding_register.freq_range_end_lo = (uint16_t)(new_end & 0xFFFF);
+        
         sweep_state = SWEEP_IDLE;
+        
+        // If enabled, launch closed loop control
+        closed_loop_enabled = (modbus_data->server_holding_register.closed_loop_control_enable == 1);
+        if(closed_loop_enabled){enable_closed_loop_timer();} 
+        
         break;
     }
 }

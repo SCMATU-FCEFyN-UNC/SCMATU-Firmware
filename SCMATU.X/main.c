@@ -10,6 +10,7 @@
 #include "robust_measurement.h" // Robust measurement library
 #include "adc_measurements.h"
 #include "resonance_sweep.h"
+#include "closed_loop_control.h"
 
 // Actuator Control Variables
 uint32_t desired_frequency = 140000;
@@ -43,7 +44,21 @@ bool sampling_active = false;
 // Robust Measurement Functions
 void get_phase_samples();
 
+// ADC variables
+bool internal_ADC_trigger = false;
+
+// Resonance Auto-detection Frequency Sweep Variables
 bool resonance_auto_detection_running = false;
+
+// Variables & Interrupt routine for closed loop control
+bool closed_loop_enabled = false;
+bool closed_loop_timer_enabled = false;
+uint16_t closed_loop_period_seconds = 0;
+uint16_t closed_loop_counter = 0;
+volatile bool closed_loop_trigger_flag = false;
+
+void trigger_closed_loop_control();
+void TMR0_Interrupt_Handler();
 
 int main(void)
 {
@@ -124,15 +139,13 @@ int main(void)
     // ----------------------------- /AD9833 Initialization -----------------------------
     
     ADC_Enable();
-    
-    modbus_data.server_input_register.internal_measurement_ready = 0;
-    modbus_data.server_input_register.best_freq_curr_hi = 0;
-    modbus_data.server_input_register.best_freq_curr_lo = 0;
-    modbus_data.server_input_register.best_freq_phase_hi = 0;
-    modbus_data.server_input_register.best_freq_phase_lo = 0;
-    
-    modbus_data.server_input_register.best_freq_phase_phase = 0;
-    modbus_data.server_input_register.best_freq_curr_phase = 0;
+        
+    // ----------------------------- Closed Loop Control Initialization ------------------------------
+    TMR0_OverflowCallbackRegister(&TMR0_Interrupt_Handler);
+    closed_loop_period_seconds = modbus_data.server_holding_register.closed_loop_control_period;
+    closed_loop_enabled = (modbus_data.server_holding_register.closed_loop_control_enable == 1);
+    // ----------------------------- /Closed Loop Control Initialization ------------------------------
+
     
     while(1)
     {
@@ -150,23 +163,29 @@ int main(void)
             {
                 //* 0            | Enable/Disable transducer
             }
-            adc_measurement_handler(&modbus_data); 
+            if (nmbs_bitfield_read(modbus_data.server_coils.coils, 1) ||
+                nmbs_bitfield_read(modbus_data.server_coils.coils, 2) && (!resonance_auto_detection_running))
+            {
+                adc_measurement_handler(&modbus_data); 
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 2, 0);
+            }
             if ((nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) || 
-                (nmbs_bitfield_read(modbus_data.server_coils.coils, 6)))
+                (nmbs_bitfield_read(modbus_data.server_coils.coils, 6)) && (!resonance_auto_detection_running))
             {
                 bool internal = nmbs_bitfield_read(modbus_data.server_coils.coils, 6);
                 trigger_phase_measurement(internal, &modbus_data);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 6, 0);
             }
-            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) // Apply changes in frequency
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) && (!resonance_auto_detection_running)) // Apply changes in frequency
             {
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 4, 0);
                 desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
                 AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
             }
-            if(nmbs_bitfield_read(modbus_data.server_coils.coils, 5))
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 5)) && (!resonance_auto_detection_running))
             {
                 if(!resonance_auto_detection_running)
                 {
@@ -180,7 +199,8 @@ int main(void)
         
         get_phase_samples();
         handle_measurement_completion(&modbus_data); 
-        resonance_state_machine(&modbus_data);        
+        resonance_state_machine(&modbus_data);    
+        trigger_closed_loop_control();
     }    
 }
 
@@ -254,5 +274,37 @@ void get_phase_samples()
             modbus_data.server_input_register.phase_difference = (int16_t)phase_ns;
             modbus_data.server_input_register.phase_ready = 1;   // ready for host
         }
+    }
+}
+
+void trigger_closed_loop_control()
+{
+    if(closed_loop_trigger_flag)
+    {
+        closed_loop_trigger_flag = false;
+        disable_closed_loop_timer();
+        if (!resonance_auto_detection_running)
+        {
+            modbus_data.server_input_register.res_freq_status = 3;
+            resonance_auto_detection_running = true; 
+        }
+    }
+}
+
+void TMR0_Interrupt_Handler()
+{
+    if(closed_loop_enabled)
+    {
+        closed_loop_counter++;
+        if(closed_loop_counter >= closed_loop_period_seconds)
+        {
+            closed_loop_counter = 0;
+            closed_loop_enabled = false;
+            closed_loop_trigger_flag = true;
+        }
+    }
+    else
+    {
+        closed_loop_counter = 0;
     }
 }

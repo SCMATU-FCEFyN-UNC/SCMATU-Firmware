@@ -32,9 +32,9 @@ extern "C" {
  */
     
 // ------------------- Modbus Limits -------------------
-#define COILS_ADDR_MAX          6
+#define COILS_ADDR_MAX          7
 #define REGS_INPUT_ADDR_MAX     26
-#define REGS_HOLDING_ADDR_MAX   22
+#define REGS_HOLDING_ADDR_MAX   25
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
 
@@ -47,7 +47,7 @@ extern "C" {
  * 3            | Measure Phase
  * 4            | Update output frequency
  * 5            | Auto-determine resonance frequency
- * 6            | Enable closed loop control
+ * 6            | Internal Phase Measurement
  */
 typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 {
@@ -57,82 +57,91 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 
 // ------------------------------------- Holding Registers -------------------------------------
 // Default Values
-#define RTU_SERVER_ADDRESS_DEFAULT  20      // Our RTU address (Slave number 20) - Slaves can be 0 to 255
-#define RTU_BAUDRATE_DEFAULT        9600
+#define RTU_SERVER_ADDRESS_DEFAULT          20      // Our RTU address (Slave number 20) - Slaves can be 0 to 255
+#define RTU_BAUDRATE_DEFAULT                9600
 
-#define DEFAULT_FRECUENCY           60000
-#define DEFAULT_FRECUENCY_HIGH      0
-#define DEFAULT_FRECUENCY_LOW       60000
-//#define DEFAULT_FRECUENCY_HIGH      ((DEFAULT_FRECUENCY >> 14) & 0x3FFF) | 0x4000;
-//#define DEFAULT_FRECUENCY_LOW       (DEFAULT_FRECUENCY & 0x3FFF) | 0x4000;
+#define DEFAULT_FRECUENCY                   60000
+#define DEFAULT_FRECUENCY_HIGH              0
+#define DEFAULT_FRECUENCY_LOW               60000
     
-#define DEFAULT_VOLTAGE_LEVEL       100
+#define DEFAULT_VOLTAGE_LEVEL               100
 
-#define DEFAULT_ON_TIME_MS          500
-#define DEFAULT_OFF_TIME_MS         500
+#define DEFAULT_ON_TIME_MS                  500
+#define DEFAULT_OFF_TIME_MS                 500
 
-#define DEFAULT_FREQ_MODE           0
+#define DEFAULT_FREQ_MODE                   0   
 
-#define DEFAULT_SAMPLES_AMOUNT      20
-#define DEFAULT_FREQ_STEP           100
-#define DEFAULT_FREQ_START          48000  
-#define DEFAULT_FREQ_END            51000  
+#define DEFAULT_SAMPLES_AMOUNT              20
+#define DEFAULT_FREQ_STEP                   100
+#define DEFAULT_FREQ_START_HI               0
+#define DEFAULT_FREQ_START_LO               48000 
+#define DEFAULT_FREQ_END_HI                 0 
+#define DEFAULT_FREQ_END_LO                 51000  
 
-#define DEFAULT_BEST_FREQ_PHASE     32767
-#define DEFAULT_BEST_FREQ_CURR      0
+#define DEFAULT_BEST_FREQ_PHASE             32767
+#define DEFAULT_BEST_FREQ_CURR              0
 
-#define DEFAULT_VOLT_AD_GAIN        4188    // Vout = Vin*0.4188 
-#define DEFAULT_CURR_AD_GAIN        39493   // Vout = Vin*39.493
-#define DEFAULT_SHUNT_RES           1010    // I = (((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000)) / (shunt_res/100)
-#define MAX_ADC_SAMPLES             10      // Each ADC measurement is the average of max 10 ADC samples
-#define DEFAULT_MAX_DISTANCE_HZ     20000
+#define DEFAULT_VOLT_AD_GAIN                4188    // Vout = Vin*0.4188 
+#define DEFAULT_CURR_AD_GAIN                39493   // Vout = Vin*39.493
+#define DEFAULT_SHUNT_RES                   1010    // I = (((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000)) / (shunt_res/100)
+#define MAX_ADC_SAMPLES                     10      // Each ADC measurement is the average of max 10 ADC samples
+
+#define DEFAULT_MAX_DISTANCE_HZ             20000
+#define DEFAULT_AUTO_FREQ_SWEEP_WIDTH       1000
+#define MAX_AUTO_FREQ_SWEEP_WIDTH           10000
+#define DEFAULT_CLOSED_LOOP_CONTROL_ENABLE  0
+#define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  5     // Default 10 minutes
+#define MIN_CLOSED_LOOP_CONTROL_PERIOD      3     // Min 3 minutes
+#define MAX_CLOSED_LOOP_CONTROL_PERIOD      3600    // Max 60 minutes
 
 // Holding registers for serial number write operations     
-#define SN_PASSWORD_CORRECT         8336    // This value must be written into holding register 19 in order to enable a serial number write.
-#define SN_WRITE_TIMEOUT            15      // Duration (in seconds) for which the serial number write operation remains enabled after correct password entry
+#define SN_PASSWORD_CORRECT             8336    // This value must be written into holding register 19 in order to enable a serial number write.
+#define SN_WRITE_TIMEOUT                15      // Duration (in seconds) for which the serial number write operation remains enabled after correct password entry
                                             // Keep in mind, this will control a counter inside the TMR0 interrupt so if the interrupt period changes, so will this duration
-#define SNW_STATUS_IDLE             0 
-#define SNW_STATUS_SUCCESS          1 
-#define SNW_STATUS_WRONG_PASS       2 
-#define SNW_STATUS_NOT_AUTHORIZED   3 
+#define SNW_STATUS_IDLE                 0 
+#define SNW_STATUS_SUCCESS              1 
+#define SNW_STATUS_WRONG_PASS           2 
+#define SNW_STATUS_NOT_AUTHORIZED       3 
 
-#define MAX_ADC_SAMPLES             10
+#define MAX_ADC_SAMPLES                 10
 
 #define MAX_ALLOWED_DISTANCE_HZ 60000
 // -----------------------------------------------------------------------------------------------------------------------
 
 typedef struct
 {
-    uint16_t addr_slave;                // 40000 - Holding Register 0 - Slave Num
-    uint16_t baudrate;                  // 40001 - Holding Register 1 - COM Baudrate (9600 default))
+    uint16_t addr_slave;                    // 40000 - Holding Register 0 - Slave Num
+    uint16_t baudrate;                      // 40001 - Holding Register 1 - COM Baudrate (9600 default))
     
-    uint16_t frequency_hi;              // 40002 - Holding Register 2 - High word (upper 16 bits) of Current/Desired Frequency (0.1 kHz jumps) 
-    uint16_t frequency_lo;              // 40003 - Holding Register 3 - Low word (lower 16 bits) of current/desired frecunecy
-    uint16_t voltage_level;             // 40004 - Holding Register 4 - voltage level (%)
-    uint16_t on_time_ms;                // 40005 - Holding Register 5 - on_time_ms
-    uint16_t off_time_ms;               // 40006 - Holding Register 6 - off_time_ms
+    uint16_t frequency_hi;                  // 40002 - Holding Register 2 - High word (upper 16 bits) of Current/Desired Frequency (0.1 kHz jumps) 
+    uint16_t frequency_lo;                  // 40003 - Holding Register 3 - Low word (lower 16 bits) of current/desired frecunecy
+    uint16_t voltage_level;                 // 40004 - Holding Register 4 - voltage level (%)
+    uint16_t on_time_ms;                    // 40005 - Holding Register 5 - on_time_ms
+    uint16_t off_time_ms;                   // 40006 - Holding Register 6 - off_time_ms
     
-    uint16_t freq_mode;                 // 40007 - Holding Register 7 - Set frecuency mode: 0- Set by user | 1- Lock to resonance frequency (closed loop control)
+    uint16_t freq_mode;                     // 40007 - Holding Register 7 - Set frecuency mode: 0- Set by user | 1- Lock to resonance frequency (closed loop control)
     
-    uint16_t samples_amount;            // 40008 - Holding Register 8 - Amount of samples taken per phase measurement
-    uint16_t freq_step;                 // 40009 - Holding Register 9 - Frequency step for resonance frequency auto-detection (example 0.1 kHz jumps) [Hz/100]
-    uint16_t freq_range_start_hi;       // 40010 - Holding Register 10 - Start of the frequency range to be tested when auto-detecting resonance frequency (hi)
-    uint16_t freq_range_start_lo;       // 40011 - Holding Register 11 - Start of the frequency range to be tested when auto-detecting resonance frequency (lo)
-    uint16_t freq_range_end_hi;         // 40012 - Holding Register 12 - End of the frequency range to be tested when auto-detecting resonance frequency (hi)
-    uint16_t freq_range_end_lo;         // 40013 - Holding Register 13 - End of the frequency range to be tested when auto-detecting resonance frequency (lo)
+    uint16_t samples_amount;                // 40008 - Holding Register 8 - Amount of samples taken per phase measurement
+    uint16_t freq_step;                     // 40009 - Holding Register 9 - Frequency step for resonance frequency auto-detection (example 0.1 kHz jumps) [Hz/100]
+    uint16_t freq_range_start_hi;           // 40010 - Holding Register 10 - Start of the frequency range to be tested when auto-detecting resonance frequency (hi)
+    uint16_t freq_range_start_lo;           // 40011 - Holding Register 11 - Start of the frequency range to be tested when auto-detecting resonance frequency (lo)
+    uint16_t freq_range_end_hi;             // 40012 - Holding Register 12 - End of the frequency range to be tested when auto-detecting resonance frequency (hi)
+    uint16_t freq_range_end_lo;             // 40013 - Holding Register 13 - End of the frequency range to be tested when auto-detecting resonance frequency (lo)
     
-    uint16_t voltage_adecuator_gain;    // 40014 - Holding Register 14 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
-    uint16_t current_adecuator_gain;    // 40015 - Holding Register 15 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
-    uint16_t shunt_res;                 // 40016 - Holding Register 16 - Shunt resistor for current determination (I = V / R) [Ohm*100]
-    uint16_t adc_samples_amount;        // 40017 - Holding Register 17 - Ammount of samples to be averaged for ADC mreasurements.
+    uint16_t voltage_adecuator_gain;        // 40014 - Holding Register 14 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
+    uint16_t current_adecuator_gain;        // 40015 - Holding Register 15 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
+    uint16_t shunt_res;                     // 40016 - Holding Register 16 - Shunt resistor for current determination (I = V / R) [Ohm*100]
+    uint16_t adc_samples_amount;            // 40017 - Holding Register 17 - Ammount of samples to be averaged for ADC mreasurements.
     
-    uint16_t phase_curr_max_distance;   // 40018 - Holding Register 18 - Max disntance (Hz) between Best Current Freq and Best Phase Freq (avois anti-resonance)
+    uint16_t phase_curr_max_distance;       // 40018 - Holding Register 18 - Max disntance (Hz) between Best Current Freq and Best Phase Freq (avois anti-resonance)
+    uint16_t auto_freq_sweep_width;         // 40019 - Holding Register 19 - After resonance has been obtained, the control-freq-sweep will be performed with res_freq +/- auto_freq_sweep_width
+    uint16_t closed_loop_control_enable;    // 40020 - Holding Register 20 - Enables/Disables closed loop control
+    uint16_t closed_loop_control_period;    // 40021 - Holding Register 21 - Period for closed loop control resonance frequeency sweeps [seconds]
     
-    uint16_t serial_number_in;          // 40019 - Holding Register 19 - Use this register to write the serial number (first input the password)
-    uint16_t sn_password;               // 40020 - Holding Register 20 - Writing the correct value into this register enables 1 serial number write for 15 seconds
-    uint16_t sn_write_status;           // 40021 - Holding Register 21 - Status for the last serial number write attempt 
-                                        // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
-    
+    uint16_t serial_number_in;              // 40022 - Holding Register 22 - Use this register to write the serial number (first input the password)
+    uint16_t sn_password;                   // 40023 - Holding Register 23 - Writing the correct value into this register enables 1 serial number write for 15 seconds
+    uint16_t sn_write_status;               // 40024 - Holding Register 24 - Status for the last serial number write attempt 
+                                            // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized)
 }holding_register;
 
 // ---------------------------------------------------------------------------------------------

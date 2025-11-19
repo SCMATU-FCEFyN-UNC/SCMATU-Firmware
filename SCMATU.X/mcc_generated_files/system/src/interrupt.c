@@ -69,6 +69,10 @@ void __interrupt() INTERRUPT_InterruptManager (void)
         {
             CCP1_CaptureISR();
         } 
+        else if(PIE0bits.TMR0IE == 1 && PIR0bits.TMR0IF == 1)
+        {
+            TMR0_ISR();
+        } 
         else if(PIE1bits.ADIE == 1 && PIR1bits.ADIF == 1)
         {
             ADC_ISR();

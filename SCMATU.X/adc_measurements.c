@@ -38,31 +38,22 @@ uint16_t get_ADC_average(adc_channel_t channel, uint8_t samples)
 // --- High-level measurement handler ---
 void adc_measurement_handler(mod_bus_registers *modbus_data)
 {
-    // Check if measurement coil is active (1 or 2)
-    if (nmbs_bitfield_read(modbus_data->server_coils.coils, 1) ||
-        nmbs_bitfield_read(modbus_data->server_coils.coils, 2))
-    {
-        // Mark as in progress
-        modbus_data->server_input_register.curr_adc_measurement_ready = 0;
+    // Mark as in progress
+    modbus_data->server_input_register.curr_adc_measurement_ready = 0;
 
-        // Determine sample count (bounded)
-        uint8_t samples = modbus_data->server_holding_register.adc_samples_amount;
-        if (samples == 0 || samples > MAX_ADC_SAMPLES)
-            samples = 1;
+    // Determine sample count (bounded)
+    uint8_t samples = modbus_data->server_holding_register.adc_samples_amount;
+    if (samples == 0 || samples > MAX_ADC_SAMPLES)
+        samples = 1;
 
-        // Perform averaged measurements
-        uint16_t ADC_peak_voltage = get_ADC_average(VRLCr_PEAK, samples);
-        uint16_t ADC_peak_current = get_ADC_average(Vr_PEAK, samples);
+    // Perform averaged measurements
+    uint16_t ADC_peak_voltage = get_ADC_average(VRLCr_PEAK, samples);
+    uint16_t ADC_peak_current = get_ADC_average(Vr_PEAK, samples);
 
-        // Store results in Modbus input registers
-        modbus_data->server_input_register.ADC_peak_voltage = ADC_peak_voltage;
-        modbus_data->server_input_register.ADC_peak_current = ADC_peak_current;
+    // Store results in Modbus input registers
+    modbus_data->server_input_register.ADC_peak_voltage = ADC_peak_voltage;
+    modbus_data->server_input_register.ADC_peak_current = ADC_peak_current;
 
-        // Mark measurement ready
-        modbus_data->server_input_register.curr_adc_measurement_ready = 1;
-
-        // Reset coils
-        nmbs_bitfield_write(modbus_data->server_coils.coils, 1, 0);
-        nmbs_bitfield_write(modbus_data->server_coils.coils, 2, 0);
-    }
+    // Mark measurement ready
+    modbus_data->server_input_register.curr_adc_measurement_ready = 1;
 }
