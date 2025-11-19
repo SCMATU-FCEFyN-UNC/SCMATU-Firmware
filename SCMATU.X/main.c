@@ -11,6 +11,7 @@
 #include "adc_measurements.h"
 #include "resonance_sweep.h"
 #include "closed_loop_control.h"
+#include "sn_handler.h"
 
 // Actuator Control Variables
 uint32_t desired_frequency = 140000;
@@ -307,4 +308,5 @@ void TMR0_Interrupt_Handler()
     {
         closed_loop_counter = 0;
     }
+    sn_write_handler(&modbus_data.server_holding_register.sn_write_status);
 }

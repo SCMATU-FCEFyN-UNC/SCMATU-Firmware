@@ -76,9 +76,7 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
     {
     case SWEEP_IDLE:
         if (resonance_auto_detection_running)
-        {
-            //disable_closed_loop_timer();
-            
+        {   
             sweep_start = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_start_hi << 16) |
                                      modbus_data->server_holding_register.freq_range_start_lo);
             sweep_end   = (uint32_t)(((uint32_t)modbus_data->server_holding_register.freq_range_end_hi << 16) |

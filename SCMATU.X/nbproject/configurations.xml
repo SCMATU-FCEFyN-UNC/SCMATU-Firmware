@@ -51,6 +51,7 @@
       <itemPath>resonance_sweep.h</itemPath>
       <itemPath>adc_measurements.h</itemPath>
       <itemPath>closed_loop_control.h</itemPath>
+      <itemPath>sn_handler.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -120,6 +121,7 @@
       <itemPath>resonance_sweep.c</itemPath>
       <itemPath>adc_measurements.c</itemPath>
       <itemPath>closed_loop_control.c</itemPath>
+      <itemPath>sn_handler.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

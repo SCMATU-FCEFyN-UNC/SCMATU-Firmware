@@ -22,6 +22,7 @@
 #include "eusart1_utils.h"
 #include "AD9833.h"
 #include "closed_loop_control.h"
+#include "sn_handler.h"
 
 int32_t read_serial(uint8_t *buf, uint16_t count, int32_t byte_timeout_ms, void *arg)
 {
@@ -544,26 +545,36 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
         }
     }
     
-    // Check for changes in serial number input
-    if(modbus_data->server_holding_register.serial_number_in != prev_holding_regs->serial_number_in)
+    // ------------------------ SN logic ------------------------
+    
+    // 1. Handle password submission
+    if (modbus_data->server_holding_register.sn_password != prev_holding_regs->sn_password)
     {
-        prev_holding_regs->serial_number_in = modbus_data->server_holding_register.serial_number_in;
-        EEPROM_WriteWord(EEPROM_SERIAL_NUMBER_IN_ADDR, modbus_data->server_holding_register.serial_number_in);
+        sn_submit_password(
+            modbus_data->server_holding_register.sn_password,
+            &modbus_data->server_holding_register.sn_write_status
+        );
+
+        modbus_data->server_holding_register.sn_password = 0;
+        prev_holding_regs->sn_password = 0;
     }
     
-    // Check for changes in serial number password
-    if(modbus_data->server_holding_register.sn_password != prev_holding_regs->sn_password)
+    if (modbus_data->server_holding_register.serial_number_in != prev_holding_regs->serial_number_in)
     {
-        prev_holding_regs->sn_password = modbus_data->server_holding_register.sn_password;
-        EEPROM_WriteWord(EEPROM_SN_PASSWORD_ADDR, modbus_data->server_holding_register.sn_password);
+        bool ok = sn_attempt_write(modbus_data->server_holding_register.serial_number_in, &modbus_data->server_holding_register.sn_write_status);
+
+        if (ok)
+        {
+            // If allowed, update input register
+            modbus_data->server_input_register.serial_number =
+                modbus_data->server_holding_register.serial_number_in;
+        }
+
+        modbus_data->server_holding_register.serial_number_in = 0;
+        prev_holding_regs->serial_number_in = 0;
     }
-    
-    // Check for changes in serial number write status
-    if(modbus_data->server_holding_register.sn_write_status != prev_holding_regs->sn_write_status)
-    {
-        prev_holding_regs->sn_write_status = modbus_data->server_holding_register.sn_write_status;
-        EEPROM_WriteWord(EEPROM_SN_WRITE_STATUS_ADDR, modbus_data->server_holding_register.sn_write_status);
-    }
+
+    // ------------------------ SN logic ------------------------
 }
 
 void single_16_bit_nvm_write(uint16_t value)
