@@ -89,7 +89,7 @@ int main(void)
     PIR6bits.CCP2IF = 0;
     CCP1CONbits.EN = 0; 
     CCP2CONbits.EN = 0; //Disables the CCP2 module (puts the peripheral in reset
-    TEST_SetLow();
+    //TEST_SetLow();
     // Link each ISR to custom handlers
     CCP1_SetCallBack(&CCP1_Interrupt_Handler);
     CCP2_SetCallBack(&CCP2_Interrupt_Handler);
@@ -102,6 +102,10 @@ int main(void)
     default_values_register(&modbus_data);
     // Load default values into each modbus holding register (shadow copy)
     set_holding_regs_to_default(&prev_holding_regs);
+    // Coil 0 initially set (transudcer ON))
+    nmbs_bitfield_write(modbus_data.server_coils.coils, 0, 1);
+    
+    // Main
     
     // Link Callback functions for modbus commands
     callbacks.read_holding_registers    = handler_read_holding_registers;
@@ -163,7 +167,11 @@ int main(void)
             // Handle changes in coil registers
             if(nmbs_bitfield_read(modbus_data.server_coils.coils, 0) && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
-                //* 0            | Enable/Disable transducer
+                AD9833SetRegisterValue(AD9833_REG_CMD); // Clears RESET, enabling output - Enable transducer
+            }
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 0) == 0) && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
+            {
+                AD9833Reset();                          // Disable transducer
             }
             if ((nmbs_bitfield_read(modbus_data.server_coils.coils, 1) || nmbs_bitfield_read(modbus_data.server_coils.coils, 2)) 
                && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
@@ -172,17 +180,16 @@ int main(void)
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 2, 0);
             }
-            if (((nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) || (nmbs_bitfield_read(modbus_data.server_coils.coils, 6))) 
+            if (((nmbs_bitfield_read(modbus_data.server_coils.coils, 3)) || (nmbs_bitfield_read(modbus_data.server_coils.coils, 1))) 
                && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
             {
                 bool internal = nmbs_bitfield_read(modbus_data.server_coils.coils, 6);
                 trigger_phase_measurement(internal, &modbus_data);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 3, 0);
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 6, 0);
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
             }
             if((nmbs_bitfield_read(modbus_data.server_coils.coils, 4)) && (!resonance_auto_detection_running) && (!sn_is_write_enabled())) // Apply changes in frequency
             {
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 4, 0);
                 desired_frequency = (((uint32_t)modbus_data.server_holding_register.frequency_hi << 16) | modbus_data.server_holding_register.frequency_lo);
                 AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
@@ -194,8 +201,36 @@ int main(void)
                     modbus_data.server_input_register.res_freq_status = 3;
                     resonance_auto_detection_running = true; 
                 }
-                nmbs_bitfield_write(modbus_data.server_coils.coils, 1, 0);
                 nmbs_bitfield_write(modbus_data.server_coils.coils, 5, 0);
+            }
+            if((nmbs_bitfield_read(modbus_data.server_coils.coils, 6)) && (!resonance_auto_detection_running) && (!sn_is_write_enabled()))
+            {
+                // Update obtained resonance frequency with the externally obtained one
+                modbus_data.server_input_register.res_freq_hi = modbus_data.server_holding_register.external_res_freq_hi;
+                modbus_data.server_input_register.res_freq_lo = modbus_data.server_holding_register.external_res_freq_lo;
+                // Set current frequency to resonance frequency
+                modbus_data.server_holding_register.frequency_hi = modbus_data.server_holding_register.external_res_freq_hi;
+                modbus_data.server_holding_register.frequency_lo = modbus_data.server_holding_register.external_res_freq_lo;
+                        
+                desired_frequency = (((uint32_t)modbus_data.server_holding_register.external_res_freq_hi << 16) | modbus_data.server_holding_register.external_res_freq_lo);
+                AD9833SetFrequency(AD9833_REG_FREQ0, desired_frequency);
+                
+                uint32_t new_start = 0;
+                if(desired_frequency > modbus_data.server_holding_register.auto_freq_sweep_width)
+                {
+                    new_start = desired_frequency - modbus_data.server_holding_register.auto_freq_sweep_width;
+                }
+                modbus_data.server_holding_register.freq_range_start_hi = (uint16_t)(new_start >> 16);
+                modbus_data.server_holding_register.freq_range_start_lo = (uint16_t)(new_start & 0xFFFF);
+
+                uint32_t new_end = desired_frequency + modbus_data.server_holding_register.auto_freq_sweep_width;
+                modbus_data.server_holding_register.freq_range_end_hi = (uint16_t)(new_end >> 16);
+                modbus_data.server_holding_register.freq_range_end_lo = (uint16_t)(new_end & 0xFFFF);
+                
+                // Set Resonance Frequency Status to 4 (sucessfully obtained by software)
+                modbus_data.server_input_register.res_freq_status = 4;
+                // Clear coil
+                nmbs_bitfield_write(modbus_data.server_coils.coils, 6, 0);
             }
         } 
         
@@ -233,16 +268,13 @@ void CCP2_Interrupt_Handler(uint16_t value) {
 
 void get_phase_samples()
 {
-    // --- 2. Handle when a measurement just finished (set by CCP2 ISR) ---
-    requested_samples = modbus_data.server_holding_register.samples_amount;
+    requested_samples = modbus_data.server_holding_register.samples_amount; // Obtain amount of samples to be taken
         
-    if (sampling_active && measurement_ready)
+    if (sampling_active && measurement_ready)  // --- 2. Handle when a measurement just finished (set by CCP2 ISR) ---
     {
         measurement_ready = false;
-
         // Store the measured value
         raw_phase_samples[sample_index++] = phase_ticks;
-
         // Reset intermediate variables
         phase_ticks = 0;
         ccp1_value = 0;
@@ -260,7 +292,6 @@ void get_phase_samples()
         else
         {
             sampling_active = false;
-
             // --- Compute median & robust average ---
             uint16_t median = calculate_median(raw_phase_samples, temp_samples, requested_samples);
             const uint16_t tolerance_ticks = 2;   // ?200 ns at 125 ns/tick

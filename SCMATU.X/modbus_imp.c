@@ -144,8 +144,6 @@ void set_holding_regs_to_default(holding_register* regs)
     regs->on_time_ms                    = DEFAULT_ON_TIME_MS;
     regs->off_time_ms                   = DEFAULT_OFF_TIME_MS;
     
-    regs->freq_mode                     = DEFAULT_FREQ_MODE;
-    
     regs->samples_amount                = DEFAULT_SAMPLES_AMOUNT;
     regs->freq_step                     = DEFAULT_FREQ_STEP;
     
@@ -162,6 +160,9 @@ void set_holding_regs_to_default(holding_register* regs)
     regs->auto_freq_sweep_width         = DEFAULT_AUTO_FREQ_SWEEP_WIDTH;
     regs->closed_loop_control_enable    = DEFAULT_CLOSED_LOOP_CONTROL_ENABLE;
     regs->closed_loop_control_period    = DEFAULT_CLOSED_LOOP_CONTROL_PERIOD;
+    
+    regs->external_res_freq_hi          = 0;
+    regs->external_res_freq_lo          = 0;
     
     regs->serial_number_in              = 0;
     regs->sn_password                   = 0;
@@ -217,16 +218,14 @@ void default_values_register(mod_bus_registers* registers)
     while (NVM_IsBusy());   // Wait until the NVM is ready before reading
     if(EEPROM_Read(EEPROM_MAGIC_ADDR) != EEPROM_CONFIG_MAGIC)
     {
-        registers->server_holding_register.addr_slave       = RTU_SERVER_ADDRESS_DEFAULT;
-        registers->server_holding_register.baudrate         = RTU_BAUDRATE_DEFAULT;
+        registers->server_holding_register.addr_slave                    = RTU_SERVER_ADDRESS_DEFAULT;
+        registers->server_holding_register.baudrate                      = RTU_BAUDRATE_DEFAULT;
         registers->server_holding_register.frequency_hi                  = DEFAULT_FRECUENCY_HIGH;
         registers->server_holding_register.frequency_lo                  = DEFAULT_FRECUENCY_LOW;
 
         registers->server_holding_register.voltage_level                 = DEFAULT_VOLTAGE_LEVEL;
         registers->server_holding_register.on_time_ms                    = DEFAULT_ON_TIME_MS;
         registers->server_holding_register.off_time_ms                   = DEFAULT_OFF_TIME_MS;
-
-        registers->server_holding_register.freq_mode                     = DEFAULT_FREQ_MODE;
 
         registers->server_holding_register.samples_amount                = DEFAULT_SAMPLES_AMOUNT;
         registers->server_holding_register.freq_step                     = DEFAULT_FREQ_STEP;
@@ -268,8 +267,6 @@ void default_values_register(mod_bus_registers* registers)
         
         EEPROM_WriteWord(EEPROM_ON_TIME_MS_ADDR, DEFAULT_ON_TIME_MS);
         EEPROM_WriteWord(EEPROM_OFF_TIME_MS_ADDR, DEFAULT_OFF_TIME_MS);
-        
-        EEPROM_WriteWord(EEPROM_FREQ_MODE_ADDR, DEFAULT_FREQ_MODE);
         
         EEPROM_WriteWord(EEPROM_SAMPLES_AMOUNT_ADDR, DEFAULT_SAMPLES_AMOUNT);
         EEPROM_WriteWord(EEPROM_FREQ_STEP_ADDR, DEFAULT_FREQ_STEP);
@@ -320,8 +317,6 @@ void default_values_register(mod_bus_registers* registers)
         
         registers->server_holding_register.on_time_ms                   = EEPROM_ReadWord(EEPROM_ON_TIME_MS_ADDR);
         registers->server_holding_register.off_time_ms                  = EEPROM_ReadWord(EEPROM_OFF_TIME_MS_ADDR);
-        
-        registers->server_holding_register.freq_mode                    = EEPROM_ReadWord(EEPROM_FREQ_MODE_ADDR);
         
         registers->server_holding_register.samples_amount               = EEPROM_ReadWord(EEPROM_SAMPLES_AMOUNT_ADDR);
         registers->server_holding_register.freq_step                    = EEPROM_ReadWord(EEPROM_FREQ_STEP_ADDR);
@@ -409,13 +404,6 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
     {
         prev_holding_regs->off_time_ms = modbus_data->server_holding_register.off_time_ms;
         EEPROM_WriteWord(EEPROM_OFF_TIME_MS_ADDR, modbus_data->server_holding_register.off_time_ms);
-    }
-    
-    // Check for changes in Freq Mode
-    if(modbus_data->server_holding_register.freq_mode != prev_holding_regs->freq_mode)
-    {
-        prev_holding_regs->freq_mode = modbus_data->server_holding_register.freq_mode;
-        EEPROM_WriteWord(EEPROM_FREQ_MODE_ADDR, modbus_data->server_holding_register.freq_mode);
     }
     
     // Check for changes in Samples amount
@@ -528,7 +516,7 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
         if(closed_loop_enabled) // Closed loop must be disabled for the timer to be changed
         {
             modbus_data->server_holding_register.closed_loop_control_period = prev_holding_regs->closed_loop_control_period;
-            modbus_data->server_input_register.system_status = 21; // Error when attempting to write holding register 21
+            modbus_data->server_input_register.system_status = 20; // Error when attempting to write holding register 21
         }
         else
         {
@@ -543,6 +531,18 @@ void holding_register_change_handler(mod_bus_registers* modbus_data, holding_reg
             // Update NVM
             EEPROM_WriteWord(EEPROM_CLOSED_LOOP_CONTROL_PERIOD_ADDR, modbus_data->server_holding_register.closed_loop_control_period); 
         }
+    }
+    
+    // Check for changes in external_res_freq_hi
+    if(modbus_data->server_holding_register.external_res_freq_hi != prev_holding_regs->external_res_freq_hi)
+    {
+        prev_holding_regs->external_res_freq_hi = modbus_data->server_holding_register.external_res_freq_hi;
+    }
+    
+    // Check for changes in external_res_freq_lo
+    if(modbus_data->server_holding_register.external_res_freq_lo != prev_holding_regs->external_res_freq_lo)
+    {
+        prev_holding_regs->external_res_freq_lo = modbus_data->server_holding_register.external_res_freq_lo;
     }
     
     // ------------------------ SN logic ------------------------

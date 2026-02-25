@@ -33,27 +33,27 @@ extern "C" {
     
 // ------------------- Modbus Limits -------------------
 #define COILS_ADDR_MAX          7
-#define REGS_INPUT_ADDR_MAX     26
-#define REGS_HOLDING_ADDR_MAX   25
+#define REGS_INPUT_ADDR_MAX     27
+#define REGS_HOLDING_ADDR_MAX   27
 #define MAX_SLAVE_VALUE         255
 #define MIN_SLAVE_VALUE         1
 
-// ------------------------------------------- Coils -------------------------------------------
+// ------------------------------------------- Coils --------------------------------------------------------------
  /* Coil Address | Function   (used to order history/max/min/mean voltage/current from panel/battery/consumption)
- * -------------|---------------------------------------------------------
- * 0            | Enable/Disable transducer
- * 1            | Measure All (Phase and Power)
- * 2            | Measure Power
- * 3            | Measure Phase
- * 4            | Update output frequency
- * 5            | Auto-determine resonance frequency
- * 6            | Internal Phase Measurement
+ * --------------|-------------------------------------------------------------------------------------------------
+ * 0             | Enable/Disable transducer
+ * 1             | Measure All (Phase and Power)
+ * 2             | Measure Power
+ * 3             | Measure Phase
+ * 4             | Update output frequency
+ * 5             | Auto-determine resonance frequency
+ * 6             | Insert externally obtanied resonance frequency values and status
  */
 typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 {
     nmbs_bitfield coils;
 }coils;
-// ---------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------
 
 // ------------------------------------- Holding Registers -------------------------------------
 // Default Values
@@ -67,9 +67,7 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define DEFAULT_VOLTAGE_LEVEL               100
 
 #define DEFAULT_ON_TIME_MS                  500
-#define DEFAULT_OFF_TIME_MS                 500
-
-#define DEFAULT_FREQ_MODE                   0   
+#define DEFAULT_OFF_TIME_MS                 500 
 
 #define DEFAULT_SAMPLES_AMOUNT              20
 #define DEFAULT_FREQ_STEP                   100
@@ -87,7 +85,7 @@ typedef struct  // A single nmbs_bitfield variable can keep 2000 coils
 #define MAX_ADC_SAMPLES                     10      // Each ADC measurement is the average of max 10 ADC samples
 
 #define DEFAULT_MAX_DISTANCE_HZ             20000
-#define DEFAULT_AUTO_FREQ_SWEEP_WIDTH       1000
+#define DEFAULT_AUTO_FREQ_SWEEP_WIDTH       2000
 #define MAX_AUTO_FREQ_SWEEP_WIDTH           10000
 #define DEFAULT_CLOSED_LOOP_CONTROL_ENABLE  0
 #define DEFAULT_CLOSED_LOOP_CONTROL_PERIOD  10     // Default 10 minutes
@@ -120,28 +118,29 @@ typedef struct
     uint16_t on_time_ms;                    // 40005 - Holding Register 5 - on_time_ms
     uint16_t off_time_ms;                   // 40006 - Holding Register 6 - off_time_ms
     
-    uint16_t freq_mode;                     // 40007 - Holding Register 7 - Set frecuency mode: 0- Set by user | 1- Lock to resonance frequency (closed loop control)
+    uint16_t samples_amount;                // 40007 - Holding Register 7 - Amount of samples taken per phase measurement
+    uint16_t freq_step;                     // 40008 - Holding Register 8 - Frequency step for resonance frequency auto-detection (example 0.1 kHz jumps) [Hz/100]
+    uint16_t freq_range_start_hi;           // 40009 - Holding Register 8 - Start of the frequency range to be tested when auto-detecting resonance frequency (hi)
+    uint16_t freq_range_start_lo;           // 40010 - Holding Register 10 - Start of the frequency range to be tested when auto-detecting resonance frequency (lo)
+    uint16_t freq_range_end_hi;             // 40011 - Holding Register 11 - End of the frequency range to be tested when auto-detecting resonance frequency (hi)
+    uint16_t freq_range_end_lo;             // 40012 - Holding Register 12 - End of the frequency range to be tested when auto-detecting resonance frequency (lo)
     
-    uint16_t samples_amount;                // 40008 - Holding Register 8 - Amount of samples taken per phase measurement
-    uint16_t freq_step;                     // 40009 - Holding Register 9 - Frequency step for resonance frequency auto-detection (example 0.1 kHz jumps) [Hz/100]
-    uint16_t freq_range_start_hi;           // 40010 - Holding Register 10 - Start of the frequency range to be tested when auto-detecting resonance frequency (hi)
-    uint16_t freq_range_start_lo;           // 40011 - Holding Register 11 - Start of the frequency range to be tested when auto-detecting resonance frequency (lo)
-    uint16_t freq_range_end_hi;             // 40012 - Holding Register 12 - End of the frequency range to be tested when auto-detecting resonance frequency (hi)
-    uint16_t freq_range_end_lo;             // 40013 - Holding Register 13 - End of the frequency range to be tested when auto-detecting resonance frequency (lo)
+    uint16_t voltage_adecuator_gain;        // 40013 - Holding Register 13 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
+    uint16_t current_adecuator_gain;        // 40014 - Holding Register 14 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
+    uint16_t shunt_res;                     // 40015 - Holding Register 15 - Shunt resistor for current determination (I = V / R) [Ohm]
+    uint16_t adc_samples_amount;            // 40016 - Holding Register 16 - Ammount of samples to be averaged for ADC mreasurements.
     
-    uint16_t voltage_adecuator_gain;        // 40014 - Holding Register 14 - Calibration: RLCr Voltage = ((ADC_Value / 4095) * Vref) / (voltage_adecuator_gain/10000))
-    uint16_t current_adecuator_gain;        // 40015 - Holding Register 15 - Calibration: r Voltage = ((ADC_Value / 4095) * Vref) / (current_adecuator_gain/1000))
-    uint16_t shunt_res;                     // 40016 - Holding Register 16 - Shunt resistor for current determination (I = V / R) [Ohm*100]
-    uint16_t adc_samples_amount;            // 40017 - Holding Register 17 - Ammount of samples to be averaged for ADC mreasurements.
+    uint16_t phase_curr_max_distance;       // 40017 - Holding Register 17 - Max disntance (Hz) between Best Current Freq and Best Phase Freq (avois anti-resonance)
+    uint16_t auto_freq_sweep_width;         // 40018 - Holding Register 18 - After resonance has been obtained, the control-freq-sweep will be performed with res_freq +/- auto_freq_sweep_width
+    uint16_t closed_loop_control_enable;    // 40019 - Holding Register 19 - Enables/Disables closed loop control
+    uint16_t closed_loop_control_period;    // 40020 - Holding Register 20 - Period for closed loop control resonance frequeency sweeps [seconds]
     
-    uint16_t phase_curr_max_distance;       // 40018 - Holding Register 18 - Max disntance (Hz) between Best Current Freq and Best Phase Freq (avois anti-resonance)
-    uint16_t auto_freq_sweep_width;         // 40019 - Holding Register 19 - After resonance has been obtained, the control-freq-sweep will be performed with res_freq +/- auto_freq_sweep_width
-    uint16_t closed_loop_control_enable;    // 40020 - Holding Register 20 - Enables/Disables closed loop control
-    uint16_t closed_loop_control_period;    // 40021 - Holding Register 21 - Period for closed loop control resonance frequeency sweeps [seconds]
+    uint16_t external_res_freq_hi;          // 40021 - Holding Register 21 - Externally obtained (software based resonance-sweep) Resonance Frequency (hi)
+    uint16_t external_res_freq_lo;          // 40022 - Holding Register 22 - Externally obtained (software based resonance-sweep) Resonance Frequency (lo)
     
-    uint16_t serial_number_in;              // 40022 - Holding Register 22 - Use this register to write the serial number (first input the password)
-    uint16_t sn_password;                   // 40023 - Holding Register 23 - Writing the correct value into this register enables 1 serial number write for 15 seconds
-    uint16_t sn_write_status;               // 40024 - Holding Register 24 - Status for the last serial number write attempt 
+    uint16_t serial_number_in;              // 40023 - Holding Register 23 - Use this register to write the serial number (first input the password)
+    uint16_t sn_password;                   // 40024 - Holding Register 24 - Writing the correct value into this register enables 1 serial number write for 15 seconds
+    uint16_t sn_write_status;               // 40025 - Holding Register 25 - Status for the last serial number write attempt 
                                             // sn_write_status can be 0 - Idle / Not triggered | 1 - Write success | 2 - Incorrect password | 3- Write not authorized | 4- Not Available
 }holding_register;
 
@@ -169,8 +168,8 @@ typedef struct
     uint16_t curr_adc_measurement_ready;    // 30007 - Input Register 7 - Current AVG ADC measurement ready for reading mobdus register flag
     
     uint16_t internal_measurement_ready;    // 30008 - Input Register 8 - Internal phase measurement ready flag
-    uint16_t res_freq_status;               // 30009 - Input Register 9 - Resonance Frecunecy status: 0 - Not obtained | 1 Obtained | 2 Failed to obtain | 3 Measurement in progress
-    
+    uint16_t res_freq_status;               // 30009 - Input Register 9 - Resonance Frecunecy status: 
+                                            // status value: 0 - Not obtained | 1 Obtained | 2 Failed to obtain | 3 Measurement in progress | 4 Obtained by Software
     uint16_t res_freq_hi;                   // 30010 - Input Register 10 - High word (upper 16 bits) of obtained resonance frequency 
     uint16_t res_freq_lo;                   // 30011 - Input Register 11 - Low word (lower 16 bits) of obtained resonance frecunecy
     uint16_t res_freq_phase;                // 30012 - Input Register 12 - Measured phase for the resonance frequency

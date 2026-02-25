@@ -17,7 +17,7 @@ extern "C" {
 /******************************************************************************/
 /* AD9833 Register commands                                                   */
 /******************************************************************************/
-#define AD9833_REG_CMD    (0 << 14)
+#define AD9833_REG_CMD    (0 << 14) // b0000_0000_0000_0000 - D8 = 0 (enable) - D0 = 0 (sine)
 #define AD9833_REG_FREQ0  (1 << 14)
 #define AD9833_REG_FREQ1  (2 << 14)
 #define AD9833_REG_PHASE0 (6 << 13)
@@ -25,7 +25,7 @@ extern "C" {
 
 /* Command Control Bits */
 #define AD9833_B28        (1 << 13)
-#define AD9833_RESET      (1 << 8)
+#define AD9833_RESET      (1 << 8)  // b0000_0001_0000_0000 - D8 = 1 (disable)
 
 /* Setup configuration commands */
 #define AD9833_OUT_SINUS  ((0 << 5) | (0 << 1) | (0 << 3))

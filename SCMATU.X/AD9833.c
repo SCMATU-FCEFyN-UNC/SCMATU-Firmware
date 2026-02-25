@@ -20,12 +20,13 @@ void AD9833SetRegisterValue(uint16_t regValue) {
     }
 }
 
-void AD9833SetFrequency(uint16_t reg, uint32_t freq) {
-    uint32_t freqWord = (uint32_t)(freq * FREC_MULT);
+void AD9833SetFrequency(uint16_t reg, uint32_t freq){
+    // B - Calcular el valor de FREQREG (freqWord))
+    uint32_t freqWord = (uint32_t)(freq * FREC_MULT);     
+    // C - Construir variables con REGADDR (|0x4000 => D15-D14 = 01 = FREQ0) y 14 bits de freqWord cada una 
     uint16_t freqHi = ((freqWord >> 14) & 0x3FFF) | 0x4000;
     uint16_t freqLo = (freqWord & 0x3FFF) | 0x4000;
-    uint32_t FREQREG = ((uint32_t)freqHi << 16) | freqLo;
-    
+    // D - Escribir Registros de frecuencia
     AD9833SetRegisterValue(AD9833_B28);
     AD9833SetRegisterValue(freqLo);
     AD9833SetRegisterValue(freqHi);

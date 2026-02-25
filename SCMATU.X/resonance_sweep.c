@@ -130,10 +130,10 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
             // Phase value is now in modbus_data.server_input_register.phase_difference
             last_phase_ns = modbus_data->server_input_register.phase_difference;
 
-            /* For Debugging, 50kHz -> 0ns phase, 49900Hz -> 20ns phase, 49800Hz -> 40ns phase
+            /* For Debugging, 50kHz -> 0ns phase, 49900Hz -> 20ns phase, 49800Hz -> 40ns phase*/
             if(sweep_freq == 49800){modbus_data->server_input_register.test_1 = (uint16_t)last_phase_ns;}
             if(sweep_freq == 49900){modbus_data->server_input_register.test_2 = (uint16_t)last_phase_ns;}
-            if(sweep_freq == 50000){modbus_data->server_input_register.test_3 = (uint16_t)last_phase_ns;}*/
+            if(sweep_freq == 50000){modbus_data->server_input_register.test_3 = (uint16_t)last_phase_ns;}
             
             // Now trigger ADC current measurement
             modbus_data->server_input_register.curr_adc_measurement_ready = 0;
@@ -232,14 +232,18 @@ void resonance_state_machine(mod_bus_registers* modbus_data)
 
         //modbus_data->server_holding_register.freq_step = 1;
 
-        uint32_t new_start = best_combined.freq - modbus_data->server_holding_register.auto_freq_sweep_width;
+        uint32_t new_start = 0;
+        if(best_combined.freq > modbus_data->server_holding_register.auto_freq_sweep_width)
+        {
+            new_start = best_combined.freq - modbus_data->server_holding_register.auto_freq_sweep_width;
+        }
         modbus_data->server_holding_register.freq_range_start_hi = (uint16_t)(new_start >> 16);
         modbus_data->server_holding_register.freq_range_start_lo = (uint16_t)(new_start & 0xFFFF);
 
         uint32_t new_end = best_combined.freq + modbus_data->server_holding_register.auto_freq_sweep_width;
         modbus_data->server_holding_register.freq_range_end_hi = (uint16_t)(new_end >> 16);
         modbus_data->server_holding_register.freq_range_end_lo = (uint16_t)(new_end & 0xFFFF);
-        
+
         sweep_state = SWEEP_IDLE;
         
         // If enabled, launch closed loop control

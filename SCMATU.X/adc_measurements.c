@@ -39,6 +39,7 @@ uint16_t get_ADC_average(adc_channel_t channel, uint8_t samples)
 void adc_measurement_handler(mod_bus_registers *modbus_data)
 {
     // Mark as in progress
+    modbus_data->server_input_register.volt_adc_measurement_ready = 0;
     modbus_data->server_input_register.curr_adc_measurement_ready = 0;
 
     // Determine sample count (bounded)
@@ -55,5 +56,6 @@ void adc_measurement_handler(mod_bus_registers *modbus_data)
     modbus_data->server_input_register.ADC_peak_current = ADC_peak_current;
 
     // Mark measurement ready
+    modbus_data->server_input_register.volt_adc_measurement_ready = 1;
     modbus_data->server_input_register.curr_adc_measurement_ready = 1;
 }

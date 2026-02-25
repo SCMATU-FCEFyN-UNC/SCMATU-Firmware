@@ -71,7 +71,7 @@ uint16_t robust_average_ns(uint16_t arr[], uint16_t median, uint16_t num_samples
 }
 
 float calculate_phase_ns(uint16_t diff, float frequency, float tick_ns) {
-    // measured time in ns (rise1 ? fall2)
+    // measured time in ns (rise1 - fall2)
     float measured_time_ns = (float)diff * tick_ns;
     
     // signal period in ns
