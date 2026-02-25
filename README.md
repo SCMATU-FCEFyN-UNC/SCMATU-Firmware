@@ -262,7 +262,6 @@ The following are stored in EEPROM:
 
 ---
 
----
 
 ## 📚 Documentation
 
